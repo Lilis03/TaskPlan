@@ -9,7 +9,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.R
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,7 +45,6 @@ import com.google.firebase.auth.GoogleAuthProvider
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
 
-
     val token = "936938268954-c3tm4b73epmvpbm9otergnff1o0om72k.apps.googleusercontent.com"
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
@@ -80,7 +78,7 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
             contentDescription = "listado imagen"
         )
         Spacer(Modifier.height(14.dp))
-        Button(onClick = { navController.navigate("registro_screen") },
+        Button(onClick = { navController.navigate("login") },
             modifier = Modifier
                 .size(width = 280.dp, height = 50.dp),
             colors = ButtonDefaults.buttonColors(
