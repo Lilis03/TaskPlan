@@ -10,8 +10,10 @@ import com.elitecode.taskplan.view.CalendarScreen
 import com.elitecode.taskplan.view.HomeScreen
 import com.elitecode.taskplan.view.LoginScreen
 import com.elitecode.taskplan.view.NuevaTareaScreen
+import com.elitecode.taskplan.view.PageViewScreen
 import com.elitecode.taskplan.view.RegistroScreen
 import com.elitecode.taskplan.viewmodel.LoginViewModel
+import com.elitecode.taskplan.viewmodel.PageViewModel
 
 
 @Composable
@@ -40,6 +42,10 @@ fun NavigationApp() {
         }
         composable(Screens.NuevaTareaScreen.route){
             NuevaTareaScreen()
+        }
+        composable(Screens.PageFirstScreen.route){
+            val pagevm: PageViewModel = viewModel()
+            PageViewScreen(navController, pagevm)
         }
     }
 }
