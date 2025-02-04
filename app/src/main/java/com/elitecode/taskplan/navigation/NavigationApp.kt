@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import com.elitecode.taskplan.view.CalendarScreen
 import com.elitecode.taskplan.view.HomeScreen
 import com.elitecode.taskplan.view.LoginScreen
+import com.elitecode.taskplan.view.NuevaTareaScreen
 import com.elitecode.taskplan.view.RegistroScreen
 import com.elitecode.taskplan.viewmodel.LoginViewModel
 
@@ -26,14 +27,19 @@ fun NavigationApp() {
             HomeScreen(navController, loginvm)
         }
         composable(Screens.RegistroScreen.route){
-            RegistroScreen(navController)
+            val lognmv: LoginViewModel = viewModel()
+            RegistroScreen(navController, lognmv)
         }
         composable(Screens.LoginScreen.route){
-            LoginScreen(navController)
+            val logvm: LoginViewModel = viewModel()
+            LoginScreen(navController, logvm)
         }
         composable(Screens.CalendarScreen.route){
             val loginvml: LoginViewModel = viewModel()
             CalendarScreen(navController, loginvml)
+        }
+        composable(Screens.NuevaTareaScreen.route){
+            NuevaTareaScreen()
         }
     }
 }
