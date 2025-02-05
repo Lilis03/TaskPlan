@@ -43,3 +43,29 @@ fun UsuarioCreado(onDismiss: () -> Unit, navController: NavController) {
 
     )
 }
+
+@Composable
+fun CredencialesIncorrectas(onDismiss: () -> Unit) {
+    val openAlert = remember { mutableStateOf(true) }
+
+    AlertDialog(
+        onDismissRequest = {
+            openAlert.value = false
+            onDismiss()
+        },
+        title = { Text(text = "Credenciales incorrectas") },
+        text = { Text(text = "Correo o contraseña incorrectos. ") },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    openAlert.value = false
+                    onDismiss()
+                }, modifier = Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(Color(0x80508BBF))
+            )
+            { Text("Aceptar", color = Color(0xFF2B5F8C)) }
+        }
+
+    )
+}
