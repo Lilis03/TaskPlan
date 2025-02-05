@@ -14,6 +14,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
@@ -25,11 +27,21 @@ class LoginViewModel: ViewModel() {
 
     private val _showUsuarioCreado = mutableStateOf(false)
     val showUsuarioCreado: State<Boolean> get() = _showUsuarioCreado
-
-    // Función para actualizar el estado
     fun setShowUsuarioCreado(value: Boolean) {
         _showUsuarioCreado.value = value
     }
+
+    private val _showCredencialesIncorrectas = mutableStateOf(false)
+    val showCredencialesIncorrectas: State<Boolean> get() = _showCredencialesIncorrectas
+    fun setShowCredencialesIncorrectas(value: Boolean) {
+        _showCredencialesIncorrectas.value = value
+    }
+    private val _showCorreoNoRegistrado = mutableStateOf(false)
+    val showCorreoNoRegistrado: State<Boolean> get() = _showCorreoNoRegistrado
+    fun setShowCorreoNoRegistrado(value: Boolean) {
+        _showCorreoNoRegistrado.value = value
+    }
+
 
     //Login con Google
     fun signInWithGoogleCredential(credential: AuthCredential, home:()-> Unit)
@@ -59,7 +71,17 @@ class LoginViewModel: ViewModel() {
             Log.d("TaskPlanLogs", "Logueado con correo y contraseña.")
             home()
         }catch (ex:Exception){
-            Log.d("TaskPlanLogs", "Error al loguearse con correo y password")
+            Log.d("TaskPlan", "Error al loguearse con correo y password")
+            when(ex){
+                is FirebaseAuthInvalidCredentialsException -> {
+                    Log.d("TaskPlan", "Credenciales incorrectas")
+                    setShowCredencialesIncorrectas(true)
+                }
+                is FirebaseAuthInvalidUserException -> {
+                    Log. d("TaskPlan", "Correo no encontrado.")
+                    setShowCorreoNoRegistrado(true)
+                }
+            }
         }
     }
 

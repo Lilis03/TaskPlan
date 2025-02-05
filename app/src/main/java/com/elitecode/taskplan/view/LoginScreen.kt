@@ -31,12 +31,16 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,6 +48,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.elitecode.taskplan.components.CamposVacios
+import com.elitecode.taskplan.components.CorreoNoRegistrado
+import com.elitecode.taskplan.components.CredencialesIncorrectas
 import com.elitecode.taskplan.navigation.Screens
 import com.elitecode.taskplan.viewmodel.LoginViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -54,9 +61,12 @@ import kotlin.contracts.contract
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel){
+
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-
+    var showCamposVacios by rememberSaveable { mutableStateOf(false) }
+    val showCredencialesIncorrectas by viewModel.showCredencialesIncorrectas
+    val showCorreoNoRegistrado by viewModel.showCorreoNoRegistrado
 
     Scaffold(topBar = {
         TopAppBar(
@@ -154,9 +164,13 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel){
 
                 Button(
                     onClick = {
-                        viewModel.signInWithEmailAndPassword(email.value, password.value){
-                            navController.navigate("calendar"){
-                                popUpTo("home_screen") {inclusive = true}
+                        if(email.value.isBlank() || password.value.isBlank()){
+                            showCamposVacios = true
+                        }else {
+                            viewModel.signInWithEmailAndPassword(email.value, password.value) {
+                                navController.navigate("calendar") {
+                                    popUpTo("home_screen") { inclusive = true }
+                                }
                             }
                         }
 
@@ -168,6 +182,13 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel){
                     border = BorderStroke(1.dp, Color(0xFF769AC4))
                 ) {
                     Text(text = "Iniciar sesión", fontSize = 20.sp)
+                }
+                if(showCamposVacios){
+                    CamposVacios(onDismiss = { showCamposVacios = false })
+                }else if(showCredencialesIncorrectas){
+                    CredencialesIncorrectas(onDismiss = { viewModel.setShowCredencialesIncorrectas(false) })
+                }else if (showCorreoNoRegistrado){
+                    CorreoNoRegistrado(onDismiss = { viewModel.setShowCorreoNoRegistrado(false) })
                 }
             }
         }
