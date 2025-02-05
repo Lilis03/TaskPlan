@@ -38,15 +38,15 @@ class LoginViewModel: ViewModel() {
             auth.signInWithCredential(credential)
                 .addOnCompleteListener{ task ->
                     if(task.isSuccessful) {
-                        Log.d("TaskPlan", "Logueado con Google exitosamente")
+                        Log.d("TaskPlanLogs", "Logueado con Google exitosamente")
                     home()
                     }
                 }
                 .addOnFailureListener {
-                    Log.d("TaskPlan", "Falló el logueo con Google")
+                    Log.d("TaskPlanLogs", "Falló el logueo con Google")
                 }
         }catch(ex:Exception){
-            Log.d("TaskPlan", "Excepción al loguear con Google: " +
+            Log.d("TaskPlanLogs", "Excepción al loguear con Google: " +
             "${ex.localizedMessage}")
         }
     }
@@ -56,10 +56,10 @@ class LoginViewModel: ViewModel() {
     = viewModelScope.launch {
         try{
             val authResult= auth.signInWithEmailAndPassword(email, password).await()
-            Log.d("TaskPlan", "Logueado con correo y contraseña.")
+            Log.d("TaskPlanLogs", "Logueado con correo y contraseña.")
             home()
         }catch (ex:Exception){
-            Log.d("TaskPlan", "Error al loguearse con correo y password")
+            Log.d("TaskPlanLogs", "Error al loguearse con correo y password")
         }
     }
 
@@ -73,14 +73,14 @@ class LoginViewModel: ViewModel() {
 
             googleSignInClient.signOut().addOnCompleteListener{ task ->
                 if(task.isSuccessful){
-                    Log.d("TaskPlan", "Sesión cerrada exitosamente")
+                    Log.d("TaskPlanLogs", "Sesión cerrada exitosamente")
                     navigateHome()
                 }else{
-                    Log.d("TaskPlan", "Error al cerrar sesión de Google.")
+                    Log.d("TaskPlanLogs", "Error al cerrar sesión de Google.")
                 }
             }
         }catch (ex:Exception){
-            Log.d("TaskPlan", "Error al cerrar sesión")
+            Log.d("TaskPlanLogs", "Error al cerrar sesión")
         }
     }
 
@@ -100,25 +100,25 @@ class LoginViewModel: ViewModel() {
                             .document(userId)
                             .set(user)
                             .addOnSuccessListener {
-                                Log.d("TaskPlan", "Usuario registrado y guardado en Firestore")
+                                Log.d("TaskPlanLogs", "Usuario registrado y guardado en Firestore")
                                 onResult(true)
                                 setShowUsuarioCreado(true)
                             }
                             .addOnFailureListener {
-                                Log.d("TaskPlan", "Error al guardar en Firestores ${it.message}")
+                                Log.d("TaskPlanLogs", "Error al guardar en Firestores ${it.message}")
                                 onResult(false)
                             }
                        /* FirebaseFirestore.getInstance().collection("users")
                             .add(user)
                             .addOnSuccessListener {
-                                Log.d("TaskPlan", "Creado ${it.id}")
+                                Log.d("TaskPlanLogs", "Creado ${it.id}")
                                 setShowCredencialesIncorrectas(true)
                             }.addOnFailureListener {
-                                Log.d("TaskPlan", "Ocurrió un error ${it}")
+                                Log.d("TaskPlanLogs", "Ocurrió un error ${it}")
                             }*/
                     }
                 }else {
-                    Log.e("TaskPlan", "Error al registrar usuario ${task.exception?.message}")
+                    Log.e("TaskPlanLogs", "Error al registrar usuario ${task.exception?.message}")
                     onResult(false)
                 }
             }

@@ -138,10 +138,8 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
             Text(text = " Crear cuenta", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray,  modifier = Modifier.clickable {
                 navController.navigate("registro_screen")
             } )
-            Button(onClick = {navController.navigate("pageFirst")}) {
-                Text("Pagina Principal")
-            }
         }
+        Button(onClick = {navController.navigate("pageFirst")}) { }
         Spacer(modifier = Modifier.weight(1f))
     }
 
