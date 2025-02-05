@@ -69,3 +69,52 @@ fun CredencialesIncorrectas(onDismiss: () -> Unit) {
 
     )
 }
+
+@Composable
+fun CamposVacios(onDismiss: () -> Unit){
+    val openDialog = remember { mutableStateOf(true) }
+
+    AlertDialog(
+        onDismissRequest = {
+            openDialog.value = false
+            onDismiss()
+        },
+        title = { Text(text = "Campos vacíos") },
+        text = { Text(text = "Ingrese su correo y contraseña.") },
+        confirmButton = {
+            TextButton(onClick = { openDialog.value = false
+                onDismiss()
+            }, modifier = Modifier
+                .clip(RoundedCornerShape(50))
+                .background(Color(0x8085C1E9))
+            )
+            { Text("Aceptar", color = Color(0xFF2B5F8C)) }
+        }
+    )
+}
+
+@Composable
+fun CorreoNoRegistrado(onDismiss: () -> Unit) {
+    val openAlert = remember { mutableStateOf(true) }
+
+    AlertDialog(
+        onDismissRequest = {
+            openAlert.value = false
+            onDismiss()
+        },
+        title = { Text(text = "Correo no registrado") },
+        text = { Text(text = "El correo proporcionado no se ha registrado.") },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    openAlert.value = false
+                    onDismiss()
+                }, modifier = Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(Color(0x80508BBF))
+            )
+            { Text("Aceptar", color = Color(0xFF2B5F8C)) }
+        }
+
+    )
+}
