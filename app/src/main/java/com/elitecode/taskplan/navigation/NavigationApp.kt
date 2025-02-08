@@ -41,7 +41,7 @@ fun NavigationApp() {
             CalendarScreen(navController, loginvml)
         }
         composable(Screens.NuevaTareaScreen.route){
-            NuevaTareaScreen()
+            NuevaTareaScreen(navController)
         }
         composable(Screens.PageFirstScreen.route){
             val pagevm: PageViewModel = viewModel()
