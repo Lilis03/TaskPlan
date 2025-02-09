@@ -1,7 +1,8 @@
 package com.elitecode.taskplan.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.internal.composableLambda
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -11,11 +12,15 @@ import com.elitecode.taskplan.view.HomeScreen
 import com.elitecode.taskplan.view.LoginScreen
 import com.elitecode.taskplan.view.NuevaTareaScreen
 import com.elitecode.taskplan.view.PageViewScreen
+import com.elitecode.taskplan.view.PerfilScreen
 import com.elitecode.taskplan.view.RegistroScreen
 import com.elitecode.taskplan.viewmodel.LoginViewModel
 import com.elitecode.taskplan.viewmodel.PageViewModel
+import com.elitecode.taskplan.viewmodel.PerfilViewModel
+import com.elitecode.taskplan.viewmodel.TaskViewModel
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavigationApp() {
     val navController = rememberNavController()
@@ -37,15 +42,19 @@ fun NavigationApp() {
             LoginScreen(navController, logvm)
         }
         composable(Screens.CalendarScreen.route){
-            val loginvml: LoginViewModel = viewModel()
-            CalendarScreen(navController, loginvml)
+            val taskvm: TaskViewModel = viewModel()
+            CalendarScreen(navController, taskvm)
         }
         composable(Screens.NuevaTareaScreen.route){
             NuevaTareaScreen(navController)
         }
         composable(Screens.PageFirstScreen.route){
-            val pagevm: PageViewModel = viewModel()
+            val pagevm: LoginViewModel = viewModel()
             PageViewScreen(navController, pagevm)
+        }
+        composable(Screens.PerfilScreen.route){
+            val perfilvm: PerfilViewModel = viewModel()
+            PerfilScreen(navController, perfilvm)
         }
     }
 }

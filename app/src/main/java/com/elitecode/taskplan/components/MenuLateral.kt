@@ -97,7 +97,7 @@ fun MenuLateral( navController: NavController,content: @Composable (PaddingValue
                         selected = false,
                         icon = { Icon(Icons.Outlined.Person, contentDescription = "Icono de perfil" )},
                             //Icons.AutoMirrored.Outlined.ArrowForward, contentDescription = null) },
-                        onClick = { navController.navigate("nuevaTarea")}
+                        onClick = { navController.navigate("perfil")}
                     )
                     NavigationDrawerItem(
                         label = { Text("Tareas/Pendientes") },
@@ -115,7 +115,7 @@ fun MenuLateral( navController: NavController,content: @Composable (PaddingValue
                         label = { Text("Calendario") },
                         selected = false,
                         icon = { Icon(Icons.Outlined.DateRange, contentDescription = null) },
-                        onClick = { /* Handle click */ },
+                        onClick ={ navController.navigate("calendar")}
                     )
                     NavigationDrawerItem(
                         label = { Text("Recordatorios") },
