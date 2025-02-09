@@ -3,21 +3,20 @@
 package com.elitecode.taskplan.view
 
 import android.annotation.SuppressLint
-import android.app.TimePickerDialog
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,12 +29,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -57,19 +55,14 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -79,7 +72,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.input.key.Key.Companion.Calendar
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -88,29 +80,33 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
 import com.elitecode.taskplan.R
+import com.elitecode.taskplan.components.CredencialesIncorrectas
 import com.elitecode.taskplan.components.MenuLateral
+import com.elitecode.taskplan.components.nuevaTarea
+import com.elitecode.taskplan.viewmodel.TareaViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NuevaTareaScreen(navController: NavHostController) {
+fun NuevaTareaScreen(navController: NavHostController, viewModel: TareaViewModel) {
+    val tarea by viewModel.tarea
+    val showTareaCreada by viewModel.showTareaCreada
+    val context = LocalContext.current
 
     MenuLateral(navController) { paddingValues ->
         Column( modifier = Modifier.padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            var titulo by remember { mutableStateOf("") }
-            var descripcion by remember { mutableStateOf("") }
+
             Card(
                 modifier = Modifier
                     .padding(26.dp),
@@ -133,8 +129,10 @@ fun NuevaTareaScreen(navController: NavHostController) {
                         )
 
                         OutlinedTextField(
-                            value = titulo,
-                            onValueChange = { titulo = it },
+                            value = tarea.titulo,
+                            onValueChange = {
+                                newTitulo -> viewModel.onTituloChange(newTitulo)
+                            },
                             placeholder = { Text("Título") },
                             leadingIcon = {
                                 Image(
@@ -156,8 +154,10 @@ fun NuevaTareaScreen(navController: NavHostController) {
                         )
 
                         OutlinedTextField(
-                            value = descripcion,
-                            onValueChange = { descripcion = it },
+                            value = tarea.descripcion,
+                            onValueChange = { newDescripcion -> viewModel.onDescripcionChange(newDescripcion)
+
+                            },
                             placeholder = { Text("Descripción") },
                             leadingIcon = {
                                 Image(
@@ -184,21 +184,29 @@ fun NuevaTareaScreen(navController: NavHostController) {
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             TimePickerToModal(
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                onTimeSelected = { onTimeSelected -> viewModel.onHoraChange(onTimeSelected)}
                             )
 
                             DatePickerFieldToModal(
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                onDateSelected = { onDateSelected -> viewModel.onFechaChange(onDateSelected)},
+                                onInvaliDate =  {Toast.makeText(context, "La fecha debe ser hoy o una fecha futura", Toast.LENGTH_LONG).show() }
                             )
                         }
                         CategoriasOpciones { categoriaSeleccionada ->
+                            viewModel.onCategoriaChange(categoriaSeleccionada)
                         }
                         PrioridadOpciones { prioridadSeleccionada ->
+                            viewModel.onPrioridadChange(prioridadSeleccionada)
                         }
-                        RecordatorioButton()
+                        RecordatorioButton{ onRecordatorioSeleccionado -> viewModel.onRecordChange(onRecordatorioSeleccionado)}
+                        ColoresButton{ onColorSelecionado ->  viewModel.onColorChange(onColorSelecionado)}
 
                         Button(
-                            onClick = { /* Acción de registro */ },
+                            onClick = {
+                                viewModel.newTask()
+                            },
                             modifier = Modifier
                                 .size(width = 230.dp, height = 50.dp)
                                 .align(Alignment.CenterHorizontally),
@@ -209,6 +217,9 @@ fun NuevaTareaScreen(navController: NavHostController) {
                         ) {
                             Text(text = "Agregar", fontSize = 20.sp)
                         }
+                        if(showTareaCreada){
+                            nuevaTarea(onDismiss = { viewModel.setShowTareaCreada(false) }, navController = navController)
+                        }
                     }
                 }
             }
@@ -218,7 +229,7 @@ fun NuevaTareaScreen(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoriasOpciones(onCategoriaSelecionada: (String) -> Unit){
+fun CategoriasOpciones(onCategoriaSelecionada: (String) -> Unit ){
     var expanden by remember { mutableStateOf(false) }
     var selectedCat by remember { mutableStateOf("") }
     val categorias = listOf("Escolar","Laboral" ,"Personal")
@@ -331,9 +342,54 @@ fun PrioridadOpciones(onPrioridadSelecionada: (String) -> Unit){
 }
 
 @Composable
-fun RecordatorioButton(){
-    val opciones = listOf("Si", "No")
-    val (selectedOptions, onOptionSelected) = remember { mutableStateOf(opciones[0]) }
+fun ColoresButton(onColorSelecionado: (String) -> Unit){
+    val colores = listOf(
+        Color(0xfF7C9A78) to "Verde",
+        Color(0xFFFFAA9A) to "Rosita",
+        Color(0xff9E6999) to "Moradito",
+        Color(0xffFFD372) to "Amarillo",
+        Color(0xffC08769) to "Café",
+        Color(0xffC4661F) to "Naranja",
+        Color(0xff962c2c) to "Rojo",
+        Color(0xff3c6390) to "Azul"
+        )
+
+    var selectedOptions by remember { mutableStateOf(colores[0].first) }
+    Text("Selecciona un color", fontSize = 19.sp)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+            .selectableGroup(),
+        horizontalArrangement = Arrangement.Center
+    ){
+        colores.forEach { (color, nombre) ->
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .background(color, shape = CircleShape)
+                        .border(
+                            width = if(selectedOptions == color) 3.dp else 1.dp,
+                            color= if(selectedOptions == color) Color(0xFF769AC4) else Color.Transparent,
+                            shape = CircleShape
+                        )
+                        .clickable {
+                            selectedOptions = color
+                            onColorSelecionado(nombre)
+                        }
+                        .padding(10.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                //Text(nombre)
+        }
+    }
+}
+
+@Composable
+fun RecordatorioButton(onRecordatorioSelecionado: (Boolean) -> Unit){
+    val opciones = listOf(true to "Si", false to "No")
+    var selectedOptions by remember { mutableStateOf(opciones[0]) }
 
         Text("¿Desea recibir un recordatorio?", fontSize = 19.sp)
             Row(
@@ -344,19 +400,22 @@ fun RecordatorioButton(){
                 horizontalArrangement = Arrangement.Center
             ) {
 
-                opciones.forEach { text ->
+                opciones.forEach { ( boolean, text) ->
                     Row(
                         modifier = Modifier
                             .selectable(
-                                selected = (text == selectedOptions),
-                                onClick = { onOptionSelected(text) },
+                                selected = (selectedOptions.first == boolean),
+                                onClick = {
+                                            selectedOptions = boolean to text
+                                            onRecordatorioSelecionado(boolean)
+                                          },
                                 role = Role.RadioButton
                             )
                             .padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-                            selected = (text == selectedOptions),
+                            selected = (selectedOptions.first == boolean),
                             onClick = null,
                             colors = RadioButtonDefaults.colors(
                                 selectedColor = Color(0xFF769AC4),
@@ -426,13 +485,17 @@ fun DatePickerDocked() {
 }
 
 @Composable
-fun DatePickerFieldToModal(modifier: Modifier = Modifier) {
+fun DatePickerFieldToModal(
+    modifier: Modifier = Modifier,
+    onDateSelected: (String) -> Unit,
+    onInvaliDate: () -> Unit
+) {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
 
     OutlinedTextField(
         value = selectedDate?.let { convertMillisToDate(it) } ?: "",
-        onValueChange = { },
+        onValueChange = {  },
         placeholder = { Text("Fecha") },
         leadingIcon = {
             Icon(Icons.Default.DateRange,
@@ -460,21 +523,41 @@ fun DatePickerFieldToModal(modifier: Modifier = Modifier) {
 
     if (showModal) {
         DatePickerModal(
-            onDateSelected = { selectedDate = it },
-            onDismiss = { showModal = false }
+            onDismiss = { showModal = false },
+            onDateSelected = { date ->
+                selectedDate = date
+                selectedDate?.let {
+                    if (isValiDate(it)) {
+                        onDateSelected(convertMillisToDate(it))
+                    }else {
+                        onInvaliDate()
+                    }
+                }
+            }
         )
     }
 }
 
 fun convertMillisToDate(millis: Long): String {
+    val calendar = Calendar.getInstance().apply {
+        timeInMillis = millis
+        set(Calendar.HOUR_OF_DAY, 12)
+    }
+
     val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    return formatter.format(Date(millis))
+    return formatter.format(calendar.time)
+}
+
+fun isValiDate(millis: Long): Boolean {
+    val selectedDate = Date(millis)
+    val today = Date(System.currentTimeMillis())
+    return selectedDate.after(today) || selectedDate == today
 }
 
 @Composable
 fun DatePickerModal(
-    onDateSelected: (Long?) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onDateSelected: (Long?) -> Unit
 ) {
     val datePickerState = rememberDatePickerState()
 
@@ -482,7 +565,10 @@ fun DatePickerModal(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
+               datePickerState.selectedDateMillis?.let { millis ->
+                   onDateSelected(millis)
+               }
+               // onDateSelected(datePickerState.selectedDateMillis)
                 onDismiss()
             }) {
                 Text("Aceptar", color = Color(0xFF769AC4), fontSize = 18.sp, fontWeight = FontWeight.Bold)
@@ -513,7 +599,7 @@ fun DatePickerModal(
 @RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalMaterial3Api
 @Composable
-fun TimePickerToModal(modifier: Modifier = Modifier) {
+fun TimePickerToModal(modifier: Modifier = Modifier, onTimeSelected: (String) -> Unit ) {
     var selectedTime by remember { mutableStateOf<LocalTime?>(null) }
     var showModal by remember { mutableStateOf(false) }
 
@@ -554,6 +640,9 @@ fun TimePickerToModal(modifier: Modifier = Modifier) {
             onDismiss = { showModal = false },
             onConfirm = {
                 selectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                selectedTime?.let { time ->
+                    onTimeSelected(time.format(DateTimeFormatter.ofPattern("hh:mm a")))
+                }
                 showModal = false
             }
         ) {

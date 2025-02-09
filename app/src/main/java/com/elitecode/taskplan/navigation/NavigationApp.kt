@@ -17,6 +17,7 @@ import com.elitecode.taskplan.view.RegistroScreen
 import com.elitecode.taskplan.viewmodel.LoginViewModel
 import com.elitecode.taskplan.viewmodel.PageViewModel
 import com.elitecode.taskplan.viewmodel.PerfilViewModel
+import com.elitecode.taskplan.viewmodel.TareaViewModel
 import com.elitecode.taskplan.viewmodel.TaskViewModel
 
 
@@ -46,7 +47,8 @@ fun NavigationApp() {
             CalendarScreen(navController, taskvm)
         }
         composable(Screens.NuevaTareaScreen.route){
-            NuevaTareaScreen(navController)
+            val tareamv: TareaViewModel = viewModel()
+            NuevaTareaScreen(navController, tareamv)
         }
         composable(Screens.PageFirstScreen.route){
             val pagevm: LoginViewModel = viewModel()

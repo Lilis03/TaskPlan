@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
+import androidx.navigation.navOptions
 
 @Composable
 fun UsuarioCreado(onDismiss: () -> Unit, navController: NavController) {
@@ -109,6 +110,34 @@ fun CorreoNoRegistrado(onDismiss: () -> Unit) {
                 onClick = {
                     openAlert.value = false
                     onDismiss()
+                }, modifier = Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(Color(0x80508BBF))
+            )
+            { Text("Aceptar", color = Color(0xFF2B5F8C)) }
+        }
+
+    )
+}
+
+@Composable
+fun nuevaTarea(onDismiss: () -> Unit, navController: NavController) {
+    val openAlert = remember { mutableStateOf(true) }
+
+    AlertDialog(
+        onDismissRequest = {
+            openAlert.value = false
+            onDismiss()
+        },
+        title = { Text(text = "Tarea agregada") },
+        text = { Text(text = "La tarea ha sido agregada correctamente..") },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    openAlert.value = false
+                    onDismiss()
+                    //Cambiar ruta a lista de tareas
+                    navController.navigate("perfil")
                 }, modifier = Modifier
                     .clip(RoundedCornerShape(50))
                     .background(Color(0x80508BBF))

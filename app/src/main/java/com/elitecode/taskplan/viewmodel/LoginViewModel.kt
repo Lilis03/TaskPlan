@@ -130,14 +130,6 @@ class LoginViewModel: ViewModel() {
                                 Log.d("TaskPlanLogs", "Error al guardar en Firestores ${it.message}")
                                 onResult(false)
                             }
-                       /* FirebaseFirestore.getInstance().collection("users")
-                            .add(user)
-                            .addOnSuccessListener {
-                                Log.d("TaskPlanLogs", "Creado ${it.id}")
-                                setShowCredencialesIncorrectas(true)
-                            }.addOnFailureListener {
-                                Log.d("TaskPlanLogs", "Ocurrió un error ${it}")
-                            }*/
                     }
                 }else {
                     Log.e("TaskPlanLogs", "Error al registrar usuario ${task.exception?.message}")

@@ -109,7 +109,7 @@ fun MenuLateral( navController: NavController,content: @Composable (PaddingValue
                         label = { Text("Agregar tarea") },
                         selected = false,
                         icon = { Icon(Icons.Outlined.AddCircle, contentDescription = null) },
-                        onClick = { /* Handle click */ }
+                        onClick = { navController.navigate("nuevaTarea") }
                     )
                     NavigationDrawerItem(
                         label = { Text("Calendario") },
