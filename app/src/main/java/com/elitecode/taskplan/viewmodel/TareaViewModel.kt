@@ -31,6 +31,12 @@ class TareaViewModel : ViewModel(){
         _showTareaCreada.value = value
     }
 
+    private val _showTareaEditada = mutableStateOf(false)
+    val showTareaEditada: State<Boolean> get() = _showTareaEditada
+    fun setShowTareaEditada(value: Boolean) {
+        _showTareaEditada.value = value
+    }
+
     private val _listaTareas = MutableStateFlow<List<Tarea>>(emptyList())
     val listaTareas = _listaTareas.asStateFlow()
 
@@ -74,20 +80,13 @@ class TareaViewModel : ViewModel(){
         }
     }
 
-    /*fun obtenerTareaPorId(id: String): Tarea? {
-        return listaTareas.value.find { it.id_tarea == id }
-        Log.d("Id de la tarea", "${id}")
-    }*/
-
     fun obtenerTareaPorId(id_tarea: String, onTareaObtenida: (Tarea) -> Unit){
         db.collection("tareas").document(id_tarea).get()
             .addOnSuccessListener { task ->
-                if(task.exists()){
-                    val tarea = task.toObject(Tarea::class.java)
-                    tarea?.let { onTareaObtenida(it)}
-
-                } else{
-                    Log.d("Firestore", "Tarea no encontrada")
+                val tarea = task.toObject(Tarea::class.java)
+                if(tarea != null){
+                    _tarea.value = tarea
+                    onTareaObtenida(tarea)
                 }
             }
             .addOnFailureListener { exception ->
@@ -95,7 +94,7 @@ class TareaViewModel : ViewModel(){
             }
     }
 
-    fun editarTarea(){
+    fun editarTarea(id_tarea: String){
         val tareaFinal = _tarea.value
 
         if(tareaFinal == null){
@@ -104,24 +103,30 @@ class TareaViewModel : ViewModel(){
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                db.collection("tareas").document(tareaFinal.id_tarea)
-                    .set(tareaFinal)
+            db.collection("tareas").document(id_tarea)
+                    //.set(tareaFinal)
+                .update(
+                    mapOf(
+                        "titulo" to tareaFinal.titulo,
+                        "descripcion" to tareaFinal.descripcion,
+                        "hora" to tareaFinal.hora,
+                        "fecha" to tareaFinal.fecha,
+                        "categoria" to tareaFinal.categoria,
+                        "prioridad" to tareaFinal.prioridad,
+                        "recordatorio" to tareaFinal.recordatorio,
+                        "color" to tareaFinal.color
+                    )
+                )
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-
-                            //obtenerTareas()
-                            //alerta de éxito aquí
+                            setShowTareaEditada(true)
+                            obtenerTareas()
                             Log.d("TareaEditada", "Tarea editada correctamente")
                         } else {
                             Log.d("Error", "Ocurrió un error al tratar de modificar los datos.")
                         }
                     }
-            }catch (ex: Exception){
-                Log.d("Excepción", "Error al actualizar la tarea ${ex.message}")
-
             }
-        }
     }
 
     fun onTituloChange(newTitulo:String){

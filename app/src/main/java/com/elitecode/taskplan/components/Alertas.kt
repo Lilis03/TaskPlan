@@ -187,3 +187,31 @@ fun eliminarTarea(onDismiss: () -> Unit, navController: NavController, viewModel
 
     )
 }
+
+@Composable
+fun editarTarea(onDismiss: () -> Unit, navController: NavController, viewModel: TareaViewModel) {
+    val openAlert = remember { mutableStateOf(true) }
+
+    AlertDialog(
+        onDismissRequest = {
+            openAlert.value = false
+            onDismiss()
+        },
+        title = { Text(text = "Tarea editada") },
+        text = { Text(text = "La tarea ha sido modificada correctamente.") },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    openAlert.value = false
+                    onDismiss()
+                    //viewModel.obtenerTareas()
+                    navController.navigate("listado_tareas")
+                }, modifier = Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(Color(0x80508BBF))
+            )
+            { Text("Aceptar", color = Color(0xFF2B5F8C)) }
+        }
+
+    )
+}

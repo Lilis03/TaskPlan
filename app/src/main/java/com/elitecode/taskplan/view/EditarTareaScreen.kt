@@ -86,6 +86,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.elitecode.taskplan.R
 import com.elitecode.taskplan.components.MenuLateral
+import com.elitecode.taskplan.components.editarTarea
 import com.elitecode.taskplan.components.nuevaTarea
 import com.elitecode.taskplan.model.Tarea
 import com.elitecode.taskplan.viewmodel.TareaViewModel
@@ -101,7 +102,7 @@ import java.util.Locale
 @Composable
 fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel: TareaViewModel){
     var tarea by remember { mutableStateOf<Tarea?>(null) }
-    val showTareaCreada by viewModel.showTareaCreada
+    val showTareaEditada by viewModel.showTareaEditada
     val context = LocalContext.current
 
     LaunchedEffect(id_tarea) {
@@ -144,7 +145,8 @@ fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel:
                         )
 
                             OutlinedTextField(
-                                value = tarea!!.titulo,
+                                value= viewModel.tarea.value?.titulo ?: "",
+                                //value = tarea!!.titulo ?: "",
                                 //value = tarea!!.titulo,
                                 onValueChange = { viewModel.onTituloChange(it) },
                                 placeholder = { Text("Título") },
@@ -168,7 +170,8 @@ fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel:
                             )
 
                         OutlinedTextField(
-                            value = tarea!!.descripcion,
+                            value = viewModel.tarea.value?.descripcion ?: "",
+                            //value = tarea!!.descripcion ?: "",
                             onValueChange = {  viewModel.onDescripcionChange(it)
 
                             },
@@ -208,8 +211,7 @@ fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel:
 
                         Button(
                             onClick = {
-                                viewModel.editarTarea()
-                                navController.popBackStack()
+                                viewModel.editarTarea(id_tarea)
                             },
                             modifier = Modifier
                                 .size(width = 230.dp, height = 50.dp)
@@ -221,8 +223,8 @@ fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel:
                         ) {
                             Text(text = "Guardar", fontSize = 20.sp)
                         }
-                        if(showTareaCreada){
-                            nuevaTarea(onDismiss = { viewModel.setShowTareaCreada(false) }, navController = navController)
+                        if(showTareaEditada){
+                            editarTarea(onDismiss = { viewModel.setShowTareaEditada(false) }, navController = navController, viewModel = viewModel)
                         }
                     }
                 }
@@ -252,7 +254,7 @@ fun CategoriasOpcione( id_tarea: String, onCategoriaSelecionada: (String) -> Uni
         onExpandedChange = {expanden =! expanden }
     ) {
         OutlinedTextField(
-            value = selectedCat,
+            value = selectedCat ?: "",
             onValueChange = { selectedCat = it },
             placeholder = { Text("Categoría") },
             leadingIcon = {
@@ -318,7 +320,7 @@ fun PrioridadOpcione(id_tarea: String,onPrioridadSelecionada: (String) -> Unit){
         onExpandedChange = {expanden =! expanden }
     ) {
         OutlinedTextField(
-            value = selectedPrio,
+            value = selectedPrio ?: "",
             onValueChange = { selectedPrio = it },
             placeholder = { Text("Prioridad") },
             leadingIcon = {
@@ -487,7 +489,7 @@ fun DatePickerDockeds() {
         modifier = Modifier.fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = selectedDate,
+            value = selectedDate ?: "",
             onValueChange = { },
             label = { Text("Fecha") },
             readOnly = true,
