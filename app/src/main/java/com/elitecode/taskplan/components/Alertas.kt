@@ -15,8 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
+import com.elitecode.taskplan.model.Tarea
+import com.elitecode.taskplan.viewmodel.TareaViewModel
 
 @Composable
 fun UsuarioCreado(onDismiss: () -> Unit, navController: NavController) {
@@ -130,19 +133,56 @@ fun nuevaTarea(onDismiss: () -> Unit, navController: NavController) {
             onDismiss()
         },
         title = { Text(text = "Tarea agregada") },
-        text = { Text(text = "La tarea ha sido agregada correctamente..") },
+        text = { Text(text = "La tarea ha sido agregada correctamente.") },
         confirmButton = {
             TextButton(
                 onClick = {
                     openAlert.value = false
                     onDismiss()
                     //Cambiar ruta a lista de tareas
-                    navController.navigate("perfil")
+                    navController.navigate("listado_tareas")
                 }, modifier = Modifier
                     .clip(RoundedCornerShape(50))
                     .background(Color(0x80508BBF))
             )
             { Text("Aceptar", color = Color(0xFF2B5F8C)) }
+        }
+
+    )
+}
+
+@Composable
+fun eliminarTarea(onDismiss: () -> Unit, navController: NavController, viewModel: TareaViewModel, tarea: Tarea){
+    val openAlert = remember { mutableStateOf(true) }
+
+    AlertDialog(
+        onDismissRequest = {
+            openAlert.value = false
+            onDismiss()
+        },
+        title = { Text(text = "¿Dese eliminar la tarea?") },
+        text = { Text(text = "Los datos no podrán ser recuperados.") },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    openAlert.value = false
+                    onDismiss()
+                   viewModel.eliminarTarea(tarea.id_tarea)
+                }, modifier = Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(Color(0x80508BBF))
+            )
+            { Text("Aceptar", color = Color(0xFF2B5F8C)) }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                openAlert.value = false
+                onDismiss()
+            }, modifier = Modifier
+                .clip(RoundedCornerShape(50))
+                .background(Color(0xFFe95252))
+            )
+            { Text("Cancelar", color = Color.White) }
         }
 
     )
