@@ -103,7 +103,7 @@ fun MenuLateral( navController: NavController,content: @Composable (PaddingValue
                         label = { Text("Tareas/Pendientes") },
                         selected = false,
                         icon = { Icon(Icons.Outlined.List, contentDescription = "Icono de perfil" )},
-                        onClick = { /* Handle click */ }
+                        onClick = { navController.navigate("listado_tareas") }
                     )
                     NavigationDrawerItem(
                         label = { Text("Agregar tarea") },
