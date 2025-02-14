@@ -22,12 +22,8 @@
     import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
     import androidx.compose.foundation.lazy.items
     import androidx.compose.foundation.shape.CircleShape
-    import androidx.compose.material.icons.Icons
-    import androidx.compose.material.icons.filled.Add
-    import androidx.compose.material3.Button
     import androidx.compose.material3.Card
     import androidx.compose.material3.CardDefaults
-    import androidx.compose.material3.Icon
     import androidx.compose.material3.IconButton
     import androidx.compose.material3.Text
     import androidx.compose.runtime.Composable
@@ -42,14 +38,13 @@
     import androidx.compose.ui.graphics.Color
     import androidx.compose.ui.platform.LocalContext
     import androidx.compose.ui.text.font.FontWeight
-    import androidx.compose.ui.text.style.TextAlign
     import androidx.compose.ui.unit.dp
     import androidx.compose.ui.unit.sp
     import androidx.navigation.NavHostController
     import com.elitecode.taskplan.components.MenuLateral
-    import com.elitecode.taskplan.model.Task
-    import com.elitecode.taskplan.viewmodel.LoginViewModel
-    import com.elitecode.taskplan.viewmodel.TaskViewModel
+    import com.elitecode.taskplan.model.Tarea
+    import com.elitecode.taskplan.viewmodel.TareaViewModel
+    import com.google.firebase.auth.FirebaseAuth
     import java.time.LocalDate
     import java.time.YearMonth
     import java.time.format.DateTimeFormatter
@@ -58,11 +53,14 @@
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun CalendarScreen(navController: NavHostController, viewModel: TaskViewModel) {
+    fun CalendarScreen(navController: NavHostController, viewModel: TareaViewModel) {
         val tasks by viewModel.tasks.collectAsState()
 
         LaunchedEffect(Unit) {
-            viewModel.loadTasks() //
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            if (userId != null) {
+                viewModel.observeTasks(userId)
+            }
         }
 
         MenuLateral(navController) { paddingValues ->
@@ -81,7 +79,6 @@
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Calendario con días del mes
                 val daysInMonth = currentMonth.lengthOfMonth()
                 val firstDayOfMonth = currentMonth.atDay(1).dayOfWeek.value % 7
                 val totalCells = daysInMonth + firstDayOfMonth
@@ -91,7 +88,11 @@
                         val dayNumber = index - firstDayOfMonth + 1
                         if (dayNumber in 1..daysInMonth) {
                             val date = currentMonth.atDay(dayNumber)
-                            Box(modifier = Modifier.aspectRatio(1f).clickable { selectedDate = date }.background(if (selectedDate == date) Color.LightGray else Color.Transparent), contentAlignment = Alignment.Center) {
+                            Box(
+                                modifier = Modifier.aspectRatio(1f).clickable { selectedDate = date }
+                                    .background(if (selectedDate == date) Color.LightGray else Color.Transparent),
+                                contentAlignment = Alignment.Center
+                            ) {
                                 Text(dayNumber.toString(), fontSize = 16.sp)
                             }
                         } else {
@@ -102,17 +103,19 @@
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Mostrar eventos del día seleccionado
-                Text("Eventos del ${selectedDate.dayOfMonth} ${selectedDate.month.getDisplayName(TextStyle.FULL, Locale.getDefault())}", fontSize = 18.sp)
+                Text(
+                    "Eventos del ${selectedDate.dayOfMonth} ${selectedDate.month.getDisplayName(TextStyle.FULL, Locale.getDefault())}",
+                    fontSize = 18.sp
+                )
 
                 // Filtrar tareas que coincidan con la fecha seleccionada
                 val filteredTasks = tasks.filter { task ->
                     try {
-                        val taskDate = LocalDate.parse(task.deadline, dateFormatter)
-                        Log.d("tasklogs", "Comparando: ${taskDate} == $selectedDate")
+                        val taskDate = LocalDate.parse(task.fecha, dateFormatter)
+                        Log.d("tasklogs", "Comparando: $taskDate == $selectedDate")
                         taskDate == selectedDate
                     } catch (e: Exception) {
-                        Log.e("tasklogs", "Error al parsear fecha: ${task.deadline}", e)
+                        Log.e("tasklogs", "Error al parsear fecha: ${task.fecha}", e)
                         false
                     }
                 }
@@ -130,10 +133,10 @@
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun EventCard(task: Task) {
+    fun EventCard(task: Tarea) {
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val dayOfMonth = try {
-            LocalDate.parse(task.deadline, dateFormatter).dayOfMonth.toString()
+            LocalDate.parse(task.fecha, dateFormatter).dayOfMonth.toString()
         } catch (e: Exception) {
             "??"
         }
@@ -146,8 +149,8 @@
                 Text(dayOfMonth, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black) // 🔥 Solo el día
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
-                    Text(task.title, color = Color.Black, fontWeight = FontWeight.SemiBold)
-                    Text(task.time, color = Color.Gray, fontSize = 14.sp)
+                    Text(task.titulo, color = Color.Black, fontWeight = FontWeight.SemiBold)
+                    Text(task.hora, color = Color.Gray, fontSize = 14.sp)
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Box(modifier = Modifier.size(12.dp).background(Color(android.graphics.Color.parseColor(task.color)), shape = CircleShape))

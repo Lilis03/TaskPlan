@@ -4,16 +4,18 @@ import android.content.ClipDescription
 import android.util.Log
 import androidx.compose.runtime.Recomposer
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elitecode.taskplan.model.Tarea
-import com.elitecode.taskplan.model.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -23,10 +25,17 @@ import java.util.UUID
 class TareaViewModel : ViewModel(){
     private val db = Firebase.firestore
     private val _tarea = mutableStateOf(Tarea())
-    val tarea: State<Tarea> = _tarea
+    var tarea: State<Tarea> = _tarea
 
     private val _showTareaCreada = mutableStateOf(false)
     val showTareaCreada: State<Boolean> get() = _showTareaCreada
+
+    private var _tasks = MutableStateFlow<List<Tarea>>(emptyList())
+    var tasks: StateFlow<List<Tarea>> = _tasks
+
+    var isLoading by mutableStateOf(false)
+        private set
+
     fun setShowTareaCreada(value: Boolean) {
         _showTareaCreada.value = value
     }
@@ -172,4 +181,48 @@ class TareaViewModel : ViewModel(){
                 }
             }
         }
+
+    fun loadTasks(userId: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        isLoading = true
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val snapshot = db.collection("tareas")
+                    .whereEqualTo("user_id", userId)
+                    .get()
+                    .await()
+
+                val tareasList = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(Tarea::class.java)
+                }
+
+                _tasks.value = tareasList
+                isLoading = false
+            } catch (e: Exception) {
+                Log.e("Firebase", "Error cargando tareas: ", e)
+                isLoading = false
+            }
+        }
     }
+    fun observeTasks(userId: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        isLoading = true
+
+        db.collection("tareas")
+            .whereEqualTo("user_id", userId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("Firebase", "Error en listener: ", error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    val tareasList = snapshot.documents.mapNotNull { doc ->
+                        doc.toObject(Tarea::class.java)
+                    }
+                    _tasks.value = tareasList
+                }
+            }
+    }
+}

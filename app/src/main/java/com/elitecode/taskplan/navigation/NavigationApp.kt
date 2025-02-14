@@ -24,7 +24,6 @@ import com.elitecode.taskplan.viewmodel.LoginViewModel
 import com.elitecode.taskplan.viewmodel.PageViewModel
 import com.elitecode.taskplan.viewmodel.PerfilViewModel
 import com.elitecode.taskplan.viewmodel.TareaViewModel
-import com.elitecode.taskplan.viewmodel.TaskViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -49,7 +48,7 @@ fun NavigationApp() {
             LoginScreen(navController, logvm)
         }
         composable(Screens.CalendarScreen.route){
-            val taskvm: TaskViewModel = viewModel()
+            val taskvm: TareaViewModel = viewModel()
             CalendarScreen(navController, taskvm)
         }
         composable(Screens.NuevaTareaScreen.route){
