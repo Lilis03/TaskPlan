@@ -8,7 +8,9 @@ data class Tarea(
     var fecha: String = "",
     var categoria: String = "",
     var prioridad: String = "",
-    var recordatorio: Boolean = true,
+    var recordatorio: Boolean = false,
+    var hora_recordatorio: String = "",
+    var fecha_recordatorio: String = "",
     var color: String=  "",
     var user_id: String = ""
 ){
@@ -21,6 +23,8 @@ data class Tarea(
             "categoria" to this.categoria,
             "prioridad" to this.prioridad,
             "recordatorio" to this.recordatorio,
+            "hora_recordatorio" to this.hora_recordatorio,
+            "fecha_recordatorio" to this.fecha_recordatorio,
             "color" to this.color,
             "user_id" to this.user_id
         )

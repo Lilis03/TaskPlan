@@ -7,7 +7,6 @@ sealed class Screens(val route: String) {
     object LoginScreen : Screens("login")
     object CalendarScreen : Screens("calendar")
     object NuevaTareaScreen : Screens("nuevaTarea")
-    object PageFirstScreen : Screens("pageFirst")
     object PerfilScreen : Screens("perfil")
     object ListaTareasScreen : Screens("listado_tareas")
     object EditarTareaScreen : Screens("editar_tarea")

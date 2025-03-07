@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,6 +64,9 @@ import com.elitecode.taskplan.viewmodel.TareaViewModel
 
 @Composable
 fun ListaTareasScreen(navController: NavController, viewModel: TareaViewModel){
+    val context = LocalContext.current
+    viewModel.obtenerTareas(context)
+
     val listaTareas by viewModel.listaTareas.collectAsState()
 
 

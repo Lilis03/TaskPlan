@@ -3,7 +3,9 @@
 package com.elitecode.taskplan.view
 
 import android.annotation.SuppressLint
+import java.util.TimeZone
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
@@ -85,6 +87,7 @@ import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
 import com.elitecode.taskplan.R
 import com.elitecode.taskplan.components.CamposVacios
+import com.elitecode.taskplan.components.CamposVaciosT
 import com.elitecode.taskplan.components.CredencialesIncorrectas
 import com.elitecode.taskplan.components.MenuLateral
 import com.elitecode.taskplan.components.nuevaTarea
@@ -104,6 +107,7 @@ fun NuevaTareaScreen(navController: NavHostController, viewModel: TareaViewModel
     val showTareaCreada by viewModel.showTareaCreada
     val context = LocalContext.current
     var showCamposVacios by rememberSaveable { mutableStateOf(false) }
+    var showFechaHoraDialog by remember { mutableStateOf(false) }
 
     MenuLateral(navController) { paddingValues ->
         Column( modifier = Modifier.padding(paddingValues),
@@ -193,8 +197,13 @@ fun NuevaTareaScreen(navController: NavHostController, viewModel: TareaViewModel
 
                             DatePickerFieldToModal(
                                 modifier = Modifier.weight(1f),
-                                onDateSelected = { onDateSelected -> viewModel.onFechaChange(onDateSelected)},
-                                onInvaliDate =  {Toast.makeText(context, "La fecha debe ser hoy o una fecha futura", Toast.LENGTH_LONG).show() }
+                                onDateSelected = { onDateSelected ->
+                                    Log.d("FechaDebug", "Fecha seleccionada pasada al ViewModel: $onDateSelected")
+                                    viewModel.onFechaChange(onDateSelected)
+                                },
+                                onInvaliDate = {
+                                    Toast.makeText(context, "La fecha debe ser hoy o una fecha futura", Toast.LENGTH_LONG).show()
+                                }
                             )
                         }
                         CategoriasOpciones { categoriaSeleccionada ->
@@ -203,13 +212,39 @@ fun NuevaTareaScreen(navController: NavHostController, viewModel: TareaViewModel
                         PrioridadOpciones { prioridadSeleccionada ->
                             viewModel.onPrioridadChange(prioridadSeleccionada)
                         }
-                        RecordatorioButton{ onRecordatorioSeleccionado -> viewModel.onRecordChange(onRecordatorioSeleccionado)}
+                        RecordatorioButton { recordatorio ->
+                            viewModel.onRecordChange(recordatorio)
+                        }
+
+                        if (tarea.recordatorio) {
+                            Button(
+                                modifier = Modifier
+                                    .size(width = 230.dp, height = 50.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                onClick = { showFechaHoraDialog = true }
+                            ) {
+                                Text("Seleccionar Fecha y Hora")
+                            }
+                        }
+
+
+                        // Diálogo para seleccionar fecha y hora
+                        if (showFechaHoraDialog) {
+                            FechaHoraRecordatorioDialog(
+                                onDismiss = { showFechaHoraDialog = false },
+                                onFechaHoraSeleccionada = { fecha, hora ->
+                                    viewModel.onFechaRecordatorioChange(fecha)
+                                    viewModel.onHoraRecordatorioChange(hora)
+                                },
+                                isTesting = true // Habilitar modo de pruebas
+                            )
+                        }
                         ColoresButton{ onColorSelecionado ->  viewModel.onColorChange(onColorSelecionado)}
 
                         Button(
                             onClick = {
                                 if(tarea.titulo.isNotEmpty() && tarea.fecha.isNotEmpty() && tarea.hora.isNotEmpty() && tarea.categoria.isNotEmpty() && tarea.prioridad.isNotEmpty()){
-                                    viewModel.newTask()
+                                    viewModel.newTask(context)
                                 }else{
                                     //mostrar alerta
                                     showCamposVacios = true
@@ -398,52 +433,6 @@ fun ColoresButton(onColorSelecionado: (String) -> Unit){
 }
 
 @Composable
-fun RecordatorioButton(onRecordatorioSelecionado: (Boolean) -> Unit){
-    val opciones = listOf(true to "Si", false to "No")
-    var selectedOptions by remember { mutableStateOf(opciones[0]) }
-
-        Text("¿Desea recibir un recordatorio?", fontSize = 19.sp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .selectableGroup(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-
-                opciones.forEach { ( boolean, text) ->
-                    Row(
-                        modifier = Modifier
-                            .selectable(
-                                selected = (selectedOptions.first == boolean),
-                                onClick = {
-                                            selectedOptions = boolean to text
-                                            onRecordatorioSelecionado(boolean)
-                                          },
-                                role = Role.RadioButton
-                            )
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = (selectedOptions.first == boolean),
-                            onClick = null,
-                            colors = RadioButtonDefaults.colors(
-                                selectedColor = Color(0xFF769AC4),
-                                unselectedColor = MaterialTheme.colorScheme.onSurface
-                            )
-                        )
-                        Text(
-                            text = text,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
-                    }
-                }
-            }
-}
-
-@Composable
 fun DatePickerDocked() {
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
@@ -499,14 +488,15 @@ fun DatePickerDocked() {
 fun DatePickerFieldToModal(
     modifier: Modifier = Modifier,
     onDateSelected: (String) -> Unit,
-    onInvaliDate: () -> Unit
+    onInvaliDate: () -> Unit,
+    isTesting: Boolean = false
 ) {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
 
     OutlinedTextField(
         value = selectedDate?.let { convertMillisToDate(it) } ?: "",
-        onValueChange = {  },
+        onValueChange = { },
         placeholder = { Text("Fecha") },
         leadingIcon = {
             Icon(Icons.Default.DateRange,
@@ -538,9 +528,9 @@ fun DatePickerFieldToModal(
             onDateSelected = { date ->
                 selectedDate = date
                 selectedDate?.let {
-                    if (isValiDate(it)) {
+                    if (isTesting || isValiDate(it)) { // Permitir cualquier fecha en modo de pruebas
                         onDateSelected(convertMillisToDate(it))
-                    }else {
+                    } else {
                         onInvaliDate()
                     }
                 }
@@ -550,13 +540,20 @@ fun DatePickerFieldToModal(
 }
 
 fun convertMillisToDate(millis: Long): String {
+    Log.d("FechaDebug", "Millis recibidos: $millis")
+
     val calendar = Calendar.getInstance().apply {
         timeInMillis = millis
-        set(Calendar.HOUR_OF_DAY, 12)
+        timeZone = TimeZone.getTimeZone("UTC") // Usar UTC en lugar de la zona horaria local
     }
 
     val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    return formatter.format(calendar.time)
+    formatter.timeZone = TimeZone.getTimeZone("UTC") // Usar UTC en el formateador
+
+    val fechaFormateada = formatter.format(calendar.time)
+    Log.d("FechaDebug", "Fecha formateada: $fechaFormateada")
+
+    return fechaFormateada
 }
 
 fun isValiDate(millis: Long): Boolean {
@@ -564,7 +561,6 @@ fun isValiDate(millis: Long): Boolean {
     val today = Date(System.currentTimeMillis())
     return selectedDate.after(today) || selectedDate == today
 }
-
 @Composable
 fun DatePickerModal(
     onDismiss: () -> Unit,
@@ -576,10 +572,18 @@ fun DatePickerModal(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-               datePickerState.selectedDateMillis?.let { millis ->
-                   onDateSelected(millis)
-               }
-               // onDateSelected(datePickerState.selectedDateMillis)
+                datePickerState.selectedDateMillis?.let { millis ->
+                    Log.d("FechaDebug", "Fecha seleccionada en DatePicker: $millis")
+
+                    val calendar = Calendar.getInstance().apply {
+                        timeInMillis = millis
+                        timeZone = TimeZone.getTimeZone("UTC") // Usar UTC
+                    }
+
+                    Log.d("FechaDebug", "Fecha ajustada a UTC: ${calendar.time}")
+
+                    onDateSelected(calendar.timeInMillis)
+                }
                 onDismiss()
             }) {
                 Text("Aceptar", color = Color(0xFF769AC4), fontSize = 18.sp, fontWeight = FontWeight.Bold)
@@ -601,7 +605,7 @@ fun DatePickerModal(
                     selectedDayContainerColor = Color(0xFF769AC4),
                     selectedDayContentColor = Color.White
                 )
-                )
+            )
         }
     }
 }
@@ -695,6 +699,121 @@ fun TimePickerDialog(
     )
 }
 
+@Composable
+fun RecordatorioButton(onRecordatorioSeleccionado: (Boolean) -> Unit) {
+    val opciones = listOf(true to "Sí", false to "No")
+    var selectedOption by remember { mutableStateOf(opciones[1]) } // "No" por defecto
 
+    Column {
+        Text("¿Desea recibir un recordatorio?", fontSize = 19.sp)
 
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .selectableGroup(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            opciones.forEach { (boolean, text) ->
+                Row(
+                    modifier = Modifier
+                        .selectable(
+                            selected = (selectedOption.first == boolean),
+                            onClick = {
+                                selectedOption = boolean to text
+                                onRecordatorioSeleccionado(boolean)
+                            },
+                            role = Role.RadioButton
+                        )
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (selectedOption.first == boolean),
+                        onClick = null,
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = Color(0xFF769AC4),
+                            unselectedColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    )
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+            }
+        }
+    }
+}
 
+@Composable
+fun FechaHoraRecordatorioDialog(
+    onDismiss: () -> Unit,
+    onFechaHoraSeleccionada: (String, String) -> Unit,
+    isTesting: Boolean = false
+) {
+    var selectedFecha by remember { mutableStateOf("") }
+    var selectedHora by remember { mutableStateOf("") }
+    var showError by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Seleccione fecha y hora del recordatorio") },
+        text = {
+            Column {
+                DatePickerFieldToModal(
+                    onDateSelected = { fecha ->
+                        selectedFecha = fecha
+                        Log.d("FechaHoraDialog", "Fecha seleccionada: $fecha")
+                        showError = false
+                    },
+                    onInvaliDate = {
+                        if (!isTesting) {
+                            showError = true
+                        }
+                    },
+                    isTesting = isTesting
+                )
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    TimePickerToModal(
+                        onTimeSelected = { hora ->
+                            selectedHora = hora
+                            Log.d("FechaHoraDialog", "Hora seleccionada: $hora")
+                            showError = false
+                        }
+                    )
+                }
+
+                if (showError) {
+                    Text(
+                        text = "Por favor, selecciona una fecha y hora válidas.",
+                        color = Color.Red,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (selectedFecha.isNotEmpty() && selectedHora.isNotEmpty()) {
+                        Log.d("FechaHoraDialog", "Fecha y Hora enviadas al ViewModel: $selectedFecha - $selectedHora")
+                        onFechaHoraSeleccionada(selectedFecha, selectedHora)
+                        onDismiss()
+                    } else {
+                        showError = true
+                    }
+                }
+            ) {
+                Text("Aceptar")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    )
+}

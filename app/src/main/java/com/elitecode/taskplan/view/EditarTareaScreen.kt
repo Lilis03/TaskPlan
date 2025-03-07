@@ -211,7 +211,7 @@ fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel:
 
                         Button(
                             onClick = {
-                                viewModel.editarTarea(id_tarea)
+                                viewModel.editarTarea(id_tarea, context)
                             },
                             modifier = Modifier
                                 .size(width = 230.dp, height = 50.dp)
@@ -237,7 +237,6 @@ fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel:
 @Composable
 fun CategoriasOpcione( id_tarea: String, onCategoriaSelecionada: (String) -> Unit ){
     var tarea by remember { mutableStateOf<Tarea?>(null) }
-
     var expanden by remember { mutableStateOf(false) }
     var selectedCat by remember { mutableStateOf("") }
     val categorias = listOf("Escolar","Laboral" ,"Personal")
