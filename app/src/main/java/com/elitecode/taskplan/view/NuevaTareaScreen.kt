@@ -85,6 +85,7 @@ import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
 import com.elitecode.taskplan.R
 import com.elitecode.taskplan.components.CamposVacios
+import com.elitecode.taskplan.components.CamposVaciosT
 import com.elitecode.taskplan.components.CredencialesIncorrectas
 import com.elitecode.taskplan.components.MenuLateral
 import com.elitecode.taskplan.components.nuevaTarea

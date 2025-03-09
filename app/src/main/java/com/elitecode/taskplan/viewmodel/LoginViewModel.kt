@@ -21,7 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class LoginViewModel: ViewModel() {
+open class LoginViewModel: ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
     private val _loading = MutableLiveData(false)
 
@@ -106,7 +106,7 @@ class LoginViewModel: ViewModel() {
         }
     }
 
-    fun createUser(nombre: String, email: String,password: String, onResult: (Boolean) -> Unit){
+    open fun createUser(nombre: String, email: String, password: String, onResult: (Boolean) -> Unit){
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener{ task ->
                 if (task.isSuccessful){

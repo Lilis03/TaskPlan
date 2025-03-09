@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -86,9 +87,10 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
             )
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.weight(1f),
+                //modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.Start,
             ) {
                 Icon(
                     painter = painterResource(com.elitecode.taskplan.R.drawable.email),
@@ -110,8 +112,7 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
             val googleSingInCliente = GoogleSignIn.getClient(context, opciones)
             launcher.launch(googleSingInCliente.signInIntent)
         },
-            modifier = Modifier
-                .size(width = 280.dp, height = 50.dp),
+            modifier = Modifier.size(width = 280.dp, height = 50.dp),
             colors = ButtonDefaults.buttonColors(
                 Color.Transparent, Color(0xFF769AC4),
                 //Color(0xFF769AC4), Color.White
@@ -134,10 +135,22 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
         }
         Spacer(modifier = Modifier.height(15.dp))
         Row(){
-            Text(text = "¿No tienes una cuenta?", fontSize = 20.sp, color = Color.Gray)
-            Text(text = " Crear cuenta", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray,  modifier = Modifier.clickable {
-                navController.navigate("registro_screen")
-            } )
+            Text(
+                text = "¿No tienes una cuenta?",
+                fontSize = 20.sp,
+                color = Color.Gray
+            )
+            Text(
+                text = " Crear cuenta",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.DarkGray,
+                modifier = Modifier
+                    .clickable {
+                        navController.navigate("registro_screen")
+                    }
+                    .testTag("crearCuenta")
+            )
         }
         Spacer(modifier = Modifier.weight(1f))
     }
