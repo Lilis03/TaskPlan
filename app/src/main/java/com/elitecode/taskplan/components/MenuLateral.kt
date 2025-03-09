@@ -96,7 +96,7 @@ fun MenuLateral( navController: NavController,content: @Composable (PaddingValue
                         label = { Text("Perfil") },
                         selected = false,
                         icon = { Icon(Icons.Outlined.Person, contentDescription = "Icono de perfil" )},
-                            //Icons.AutoMirrored.Outlined.ArrowForward, contentDescription = null) },
+                        //Icons.AutoMirrored.Outlined.ArrowForward, contentDescription = null) },
                         onClick = { navController.navigate("perfil")}
                     )
                     NavigationDrawerItem(
@@ -124,6 +124,7 @@ fun MenuLateral( navController: NavController,content: @Composable (PaddingValue
                         badge = { Text("20") },
                         onClick = { /* Handle click */ },
                     )
+
                     Spacer(Modifier.height(12.dp))
                 }
             }

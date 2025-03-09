@@ -17,12 +17,10 @@ import com.elitecode.taskplan.view.HomeScreen
 import com.elitecode.taskplan.view.ListaTareasScreen
 import com.elitecode.taskplan.view.LoginScreen
 import com.elitecode.taskplan.view.NuevaTareaScreen
-import com.elitecode.taskplan.view.PageViewScreen
 import com.elitecode.taskplan.view.PerfilScreen
 import com.elitecode.taskplan.view.RegistroScreen
 import com.elitecode.taskplan.viewmodel.LoginViewModel
 import com.elitecode.taskplan.viewmodel.PageViewModel
-import com.elitecode.taskplan.viewmodel.PerfilViewModel
 import com.elitecode.taskplan.viewmodel.TareaViewModel
 
 
@@ -55,12 +53,8 @@ fun NavigationApp() {
             val tareamv: TareaViewModel = viewModel()
             NuevaTareaScreen(navController, tareamv)
         }
-        composable(Screens.PageFirstScreen.route){
-            val pagevm: LoginViewModel = viewModel()
-            PageViewScreen(navController, pagevm)
-        }
         composable(Screens.PerfilScreen.route){
-            val perfilvm: PerfilViewModel = viewModel()
+            val perfilvm: LoginViewModel = viewModel()
             PerfilScreen(navController, perfilvm)
         }
         composable(Screens.ListaTareasScreen.route) {

@@ -48,6 +48,7 @@
     import java.time.LocalDate
     import java.time.YearMonth
     import java.time.format.DateTimeFormatter
+    import java.time.format.DateTimeParseException
     import java.time.format.TextStyle
     import java.util.Locale
 
@@ -58,8 +59,9 @@
 
         LaunchedEffect(Unit) {
             val userId = FirebaseAuth.getInstance().currentUser?.uid
+            Log.d("CalendarTask", "${userId}")
             if (userId != null) {
-                viewModel.observeTasks(userId)
+                viewModel.loadTasks(userId)
             }
         }
 
@@ -67,7 +69,7 @@
             val context = LocalContext.current
             var selectedDate by remember { mutableStateOf(LocalDate.now()) }
             var currentMonth by remember { mutableStateOf(YearMonth.now()) }
-            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
             Column(modifier = Modifier.padding(paddingValues).fillMaxSize().padding(16.dp)) {
                 // Header con el mes
@@ -110,21 +112,33 @@
 
                 // Filtrar tareas que coincidan con la fecha seleccionada
                 val filteredTasks = tasks.filter { task ->
+                    if (task.fecha.isNullOrEmpty()) {
+                        Log.e("CalendarTask", "La fecha de la tarea es nula o vacía: ${task.fecha}")
+                        return@filter false
+                    }
                     try {
                         val taskDate = LocalDate.parse(task.fecha, dateFormatter)
-                        Log.d("tasklogs", "Comparando: $taskDate == $selectedDate")
+                        Log.d("CalendarTask", "Comparando: $taskDate == $selectedDate")
                         taskDate == selectedDate
-                    } catch (e: Exception) {
-                        Log.e("tasklogs", "Error al parsear fecha: ${task.fecha}", e)
+                    } catch (e: DateTimeParseException) {
+                        Log.e("CalendarTask", "Error al parsear fecha: ${task.fecha}", e)
                         false
                     }
                 }
 
-                Log.d("tasklogs", "Tareas encontradas: ${filteredTasks.size}")
+
 
                 LazyColumn {
-                    items(filteredTasks) { task ->
-                        EventCard(task)
+                    if (filteredTasks.isEmpty()) {
+                        Log.d("CalendarTask", "filteredTasks está vacío")
+                    } else {
+                        items(filteredTasks) { task ->
+                            if (task == null) {
+                                Log.e("CalendarTask", "Tarea nula en filteredTasks")
+                            } else {
+                                EventCard(task)
+                            }
+                        }
                     }
                 }
             }
@@ -134,11 +148,22 @@
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun EventCard(task: Tarea) {
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        val color = when (task.color) {
+            "Verde" -> Color(0xfF7C9A78)
+            "Rosita" -> Color(0xFFFFAA9A)
+            "Moradito" -> Color(0xff9E6999)
+            "Amarillo" -> Color(0xffFFD372)
+            "Café" -> Color(0xffC08769)
+            "Naranja" -> Color(0xffC4661F)
+            "Rojo" -> Color(0xff962c2c)
+            "Azul" -> Color(0xff3c6390)
+            else -> Color.Transparent
+        }
         val dayOfMonth = try {
             LocalDate.parse(task.fecha, dateFormatter).dayOfMonth.toString()
         } catch (e: Exception) {
-            "??"
+            Log.e("CalendarTask", "Error al parsear fecha: ${task.fecha}", e)
         }
 
         Card(
@@ -146,14 +171,20 @@
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(dayOfMonth, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black) // 🔥 Solo el día
+                Text("${dayOfMonth}", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(task.titulo, color = Color.Black, fontWeight = FontWeight.SemiBold)
                     Text(task.hora, color = Color.Gray, fontSize = 14.sp)
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Box(modifier = Modifier.size(12.dp).background(Color(android.graphics.Color.parseColor(task.color)), shape = CircleShape))
+                /*val taskColor = try {
+                    Color(android.graphics.Color.parseColor(task.color))
+                } catch (e: Exception) {
+                    Log.e("CalendarTask", "Error al parsear color: ${task.color}", e)
+                    Color.Gray
+                }*/
+                Box(modifier = Modifier.size(12.dp).background(color, shape = CircleShape))
             }
         }
     }

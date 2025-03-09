@@ -57,7 +57,7 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
             val account = task.getResult(ApiException::class.java)
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
             viewModel.signInWithGoogleCredential(credential){
-                navController.navigate("pageFirst")
+                navController.navigate("perfil")
             }
         }catch(ex: Exception){
             Log.d("TaskPlan", "GoogleSignIn falló")
