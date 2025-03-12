@@ -12,7 +12,8 @@ data class Tarea(
     var hora_recordatorio: String = "",
     var fecha_recordatorio: String = "",
     var color: String=  "",
-    var user_id: String = ""
+    var user_id: String = "",
+    var completada: Boolean = false
 ){
     fun toMap(): MutableMap<String, Any>{
         return mutableMapOf(
@@ -26,7 +27,8 @@ data class Tarea(
             "hora_recordatorio" to this.hora_recordatorio,
             "fecha_recordatorio" to this.fecha_recordatorio,
             "color" to this.color,
-            "user_id" to this.user_id
+            "user_id" to this.user_id,
+            "completada" to this.completada
         )
     }
 }

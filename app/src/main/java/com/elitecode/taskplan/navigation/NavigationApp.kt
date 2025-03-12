@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.elitecode.taskplan.view.CalendarScreen
+import com.elitecode.taskplan.view.EditarPerfilScreen
 import com.elitecode.taskplan.view.EditarTareaScreen
 import com.elitecode.taskplan.view.HomeScreen
 import com.elitecode.taskplan.view.ListaTareasScreen
@@ -20,7 +21,6 @@ import com.elitecode.taskplan.view.NuevaTareaScreen
 import com.elitecode.taskplan.view.PerfilScreen
 import com.elitecode.taskplan.view.RegistroScreen
 import com.elitecode.taskplan.viewmodel.LoginViewModel
-import com.elitecode.taskplan.viewmodel.PageViewModel
 import com.elitecode.taskplan.viewmodel.TareaViewModel
 
 
@@ -70,6 +70,19 @@ fun NavigationApp() {
                 EditarTareaScreen(navController, id_tarea = id_tarea, tareae)
             }else{
                Log.d("Id inválido", "El id es inválido")
+            }
+        }
+        composable(
+            "editarPerfil/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val id_usuario = backStackEntry.arguments?.getString("id") ?: ""
+            Log.d("PerfilEdit", "ID recibido en editarPerfil: $id_usuario") // Depuración
+
+            if (id_usuario.isNotEmpty()) {
+                EditarPerfilScreen(navController, id_usuario, viewModel = viewModel())
+            } else {
+                Log.e("PerfilEdit", "El id es inválido")
             }
         }
         /*composable("editar_tarea/{id_tarea}"){ task->

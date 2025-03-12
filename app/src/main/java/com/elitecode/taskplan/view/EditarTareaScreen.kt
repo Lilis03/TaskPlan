@@ -2,6 +2,7 @@ package com.elitecode.taskplan.view
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -42,6 +44,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -119,8 +122,10 @@ fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel:
 
 
     MenuLateral(navController) { paddingValues ->
-        Column( modifier = Modifier.padding(paddingValues),
+        Column( modifier = Modifier.padding(paddingValues).fillMaxSize()
+            .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
+
         ) {
 
             Card(
@@ -146,8 +151,6 @@ fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel:
 
                             OutlinedTextField(
                                 value= viewModel.tarea.value?.titulo ?: "",
-                                //value = tarea!!.titulo ?: "",
-                                //value = tarea!!.titulo,
                                 onValueChange = { viewModel.onTituloChange(it) },
                                 placeholder = { Text("Título") },
                                 leadingIcon = {
@@ -157,13 +160,16 @@ fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel:
                                         colorFilter = ColorFilter.tint(Color(0xFF769AC4))
                                     )
                                 },
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    unfocusedBorderColor = Color(0xFF769AC4),
-                                    focusedBorderColor = Color(0xFF769AC4),
+                                colors = TextFieldDefaults.colors(
+                                    unfocusedContainerColor = Color.Transparent,
+                                    focusedContainerColor = Color.Transparent,
+                                    focusedIndicatorColor = Color(0xFF769AC4),
+                                    unfocusedIndicatorColor = Color(0xFF769AC4),
                                     cursorColor = Color(0xFF769AC4)
                                 ),
+
                                 textStyle = LocalTextStyle.current.copy(
-                                    fontSize = 22.sp
+                                    fontSize = 17.sp
                                 ),
                                 shape = RoundedCornerShape(50.dp),
                                 modifier = Modifier.fillMaxWidth()
@@ -183,9 +189,11 @@ fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel:
                                     colorFilter = ColorFilter.tint(Color(0xFF769AC4))
                                 )
                             },
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                unfocusedBorderColor = Color(0xFF769AC4),
-                                focusedBorderColor = Color(0xFF769AC4),
+                            colors = TextFieldDefaults.colors( // Usar colors en lugar de outlinedTextFieldColors
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color(0xFF769AC4),
+                                focusedIndicatorColor = Color(0xFF769AC4),
                                 cursorColor = Color(0xFF769AC4)
                             ),
                             textStyle = LocalTextStyle.current.copy(
@@ -206,8 +214,29 @@ fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel:
                         }
                         CategoriasOpcione(id_tarea = id_tarea, onCategoriaSelecionada = { categoria -> viewModel.onCategoriaChange(categoria)})
                         PrioridadOpcione(id_tarea = id_tarea, onPrioridadSelecionada = {prioridad -> viewModel.onPrioridadChange(prioridad)})
-                        RecordatorioButtonn(id_tarea = id_tarea, onRecordatorioSelecionado = { recordatorio -> viewModel.onRecordChange(recordatorio)})
+
+                        if (viewModel.tarea.value.recordatorio) {
+                            FechaHoraRecordatorioDialog(
+                                id_tarea = id_tarea,  // <-- Se agrega este parámetro
+                                onFechaHoraSeleccionada = { fecha, hora ->
+                                    viewModel.onFechaRecordatorioChange(fecha)
+                                    viewModel.onHoraRecordatorioChange(hora)
+                                },
+                                isTesting = true
+                            )
+                        } else {
+                            RecordatorioButtonn(id_tarea = id_tarea, onRecordatorioSelecionado = { recordatorio ->
+                                viewModel.onRecordChange(recordatorio)
+                            })
+                        }
                         ColoresButtonn(id_tarea = id_tarea, onColorSelecionado = {color -> viewModel.onColorChange(color)})
+
+                        EstadoTareaDropdown(
+                            estadoActual = viewModel.tarea.value?.completada ?: false,
+                            onEstadoChange = { estado ->
+                                viewModel.onCompletadaChange(estado)
+                            }
+                        )
 
                         Button(
                             onClick = {
@@ -263,9 +292,11 @@ fun CategoriasOpcione( id_tarea: String, onCategoriaSelecionada: (String) -> Uni
                     tint = Color(0xFF769AC4)
                 )
             },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                unfocusedBorderColor = Color(0xFF769AC4),
-                focusedBorderColor = Color(0xFF769AC4),
+            colors = TextFieldDefaults.colors( // Usar colors en lugar de outlinedTextFieldColors
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedIndicatorColor = Color(0xFF769AC4),
+                focusedIndicatorColor = Color(0xFF769AC4),
                 cursorColor = Color(0xFF769AC4)
             ),
             shape = RoundedCornerShape(50.dp),
@@ -329,9 +360,11 @@ fun PrioridadOpcione(id_tarea: String,onPrioridadSelecionada: (String) -> Unit){
                     colorFilter = ColorFilter.tint(Color(0xFF769AC4))
                 )
             },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                unfocusedBorderColor = Color(0xFF769AC4),
-                focusedBorderColor = Color(0xFF769AC4),
+            colors = TextFieldDefaults.colors( // Usar colors en lugar de outlinedTextFieldColors
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedIndicatorColor = Color(0xFF769AC4),
+                focusedIndicatorColor = Color(0xFF769AC4),
                 cursorColor = Color(0xFF769AC4)
             ),
             shape = RoundedCornerShape(50.dp),
@@ -558,9 +591,11 @@ fun DatePickerFieldToModals(
                 contentDescription = "Select date",
                 tint = Color(0xFF769AC4))
         },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            unfocusedBorderColor = Color(0xFF769AC4),
-            focusedBorderColor = Color(0xFF769AC4),
+        colors = TextFieldDefaults.colors( // Usar colors en lugar de outlinedTextFieldColors
+            unfocusedContainerColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
+            unfocusedIndicatorColor = Color(0xFF769AC4),
+            focusedIndicatorColor = Color(0xFF769AC4),
             cursorColor = Color(0xFF769AC4)
         ),
         shape = RoundedCornerShape(50.dp),
@@ -761,4 +796,140 @@ fun TimePickerDialogs(
         },
         text = { content()}
     )
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FechaHoraRecordatorioDialog(
+    onFechaHoraSeleccionada: (String, String) -> Unit,
+    id_tarea: String,
+    isTesting: Boolean = false
+) {
+    val viewModel: TareaViewModel = viewModel()
+    var selectedFecha by remember { mutableStateOf("") }
+    var selectedHora by remember { mutableStateOf("") }
+    var showError by remember { mutableStateOf(false) }
+
+
+    // Formateadores para fecha y hora
+    val formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy")  // Formato correcto de la fecha almacenada
+    val formatoHora = DateTimeFormatter.ofPattern("hh:mm a", Locale("es", "ES")) // Formato correcto de la hora almacenada
+
+    // Cargar la fecha y hora de la tarea desde Firebase
+    LaunchedEffect(id_tarea) {
+        viewModel.obtenerTareaPorId(id_tarea) { tareaObtenida ->
+            Log.d("Firestore", "Tarea en edit: $tareaObtenida")
+
+            tareaObtenida?.fecha_recordatorio?.let { fecha ->
+                try {
+                    // Verificamos que la fecha no sea vacía antes de asignarla
+                    selectedFecha = fecha
+                } catch (e: Exception) {
+                    Log.e("FechaHoraDialog", "Error al parsear la fecha: $fecha", e)
+                }
+            }
+
+            tareaObtenida?.hora_recordatorio?.let { hora ->
+                try {
+                    // Convertimos la hora almacenada a un formato correcto
+                    val parsedTime = LocalTime.parse(hora, formatoHora)
+                    selectedHora = parsedTime.format(formatoHora) // Lo volvemos a formatear para que lo muestre bien
+                } catch (e: Exception) {
+                    Log.e("FechaHoraDialog", "Error al parsear la hora: $hora", e)
+                }
+            }
+        }
+    }
+
+    Text("Fecha y hora del recordatorio", fontSize = 19.sp)
+
+
+    Column {
+        // **Mostrar fecha correctamente**
+        DatePickerFieldToModal(
+            onDateSelected = { fecha ->
+                selectedFecha = fecha
+                Log.d("FechaHoraDialog", "Fecha seleccionada: $fecha")
+                showError = false
+            },
+            onInvaliDate = {
+                if (!isTesting) {
+                    showError = true
+                }
+            },
+            isTesting = isTesting
+        )
+
+        // **Mostrar hora correctamente**
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            TimePickerToModal(
+                onTimeSelected = { hora ->
+                    selectedHora = hora
+                    Log.d("FechaHoraDialog", "Hora seleccionada: $hora")
+                    showError = false
+                }
+            )
+        }
+
+        if (showError) {
+            Text(
+                text = "Por favor, selecciona una fecha y hora válidas.",
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun EstadoTareaDropdown(
+    estadoActual: Boolean,
+    onEstadoChange: (Boolean) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val opciones = listOf("Pendiente", "Completado")
+    val estadoSeleccionado = if (estadoActual) "Completado" else "Pendiente"
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, Color(0xFF769AC4), RoundedCornerShape(50.dp))
+            .clickable { expanded = true }
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.arrow_back), // Reemplazar con un ícono adecuado
+                contentDescription = "Estado",
+                tint = Color(0xFF769AC4),
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = estadoSeleccionado,
+                fontSize = 16.sp,
+                color = Color.Black,
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            opciones.forEach { opcion ->
+                DropdownMenuItem(
+                    text = { Text(opcion) },
+                    onClick = {
+                        onEstadoChange(opcion == "Completado")
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
 }
