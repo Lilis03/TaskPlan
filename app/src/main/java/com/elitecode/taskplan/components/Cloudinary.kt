@@ -27,8 +27,8 @@ fun uploadClouadinaryImage(context: Context, uri: Uri, onResult: (String?) -> Un
     try {
 
         com.cloudinary.android.MediaManager.get().upload(uri)
-            .option("folder", "DailyPass/image") // Configura la carpeta en Cloudinary
-            .unsigned("d6odtz3u") // Preset de carga no firmada
+            .option("folder", "fotos_perfil") // Configura la carpeta en Cloudinary
+            .unsigned("perfil_elitecode") // Preset de carga no firmada
             .callback(object : UploadCallback {
                 override fun onStart(requestId: String?) {
                     Log.d("ImagenPerfil", "Inicio de la subida")

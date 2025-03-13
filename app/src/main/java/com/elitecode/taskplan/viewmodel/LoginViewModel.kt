@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -39,6 +40,9 @@ class LoginViewModel: ViewModel() {
         private set
 
     var usuario by mutableStateOf<User?>(null)
+        private set
+
+    var imageUrl: String = "" // Asegúrate de que sea una propiedad mutable
         private set
 
     private val _showUsuarioCreado = mutableStateOf(false)
@@ -222,6 +226,17 @@ class LoginViewModel: ViewModel() {
                 if (document.exists()) {
                     Log.d("PerfilScreen", "Usuario encontrado en Firestore: ${document.data}") // Log para depuración
                     usuario = document.toObject(User::class.java) // Asignar el usuario
+                    if (!usuario?.foto_perfil.isNullOrEmpty()) {  // Verifica que 'foto_perfil' no sea null ni vacío
+                        val identificador = usuario?.foto_perfil?.substringAfter("/upload/")?.substringBeforeLast(".")
+                        if (identificador != null) {
+                            imageUrl = "https://res.cloudinary.com/dgrvrwdk9/image/upload/$identificador"  // URL directa
+                            Log.d("PerfilScreen", "Imagen URL: $imageUrl")
+                        } else {
+                            Log.e("PerfilScreen", "No se pudo extraer el identificador de la imagen")
+                        }
+                    } else {
+                        Log.e("PerfilScreen", "Foto de perfil no disponible o vacía")
+                    }
                     Log.d("PerfilScreen", "Usuario encontrado en Firestore: ${usuario}")
                 } else {
                     Log.e("PerfilScreen", "El usuario no existe en Firestore. UID: $userId")
@@ -232,23 +247,36 @@ class LoginViewModel: ViewModel() {
             }
     }
 
+
     fun obtenerUsuario(id: String, onResult: (User?) -> Unit) {
-        Log.d("EditarPerfil", "🟡 Buscando usuario con ID: $id")
+        Log.d("EditarPerfil", "Buscando usuario con ID: $id")
 
         db.collection("users").document(id).get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
                     val usuario = document.toObject(User::class.java)
                     Log.d("EditarPerfil", "Usuario encontrado: ${usuario}")
+                    if (!usuario?.foto_perfil.isNullOrEmpty()) {  // Verifica que 'foto_perfil' no sea null ni vacío
+                        val identificador = usuario?.foto_perfil?.substringAfter("/upload/")?.substringBeforeLast(".")
+                        if (identificador != null) {
+                            imageUrl = "https://res.cloudinary.com/dgrvrwdk9/image/upload/$identificador"  // URL directa
+                            Log.d("PerfilScreen", "Imagen URL: $imageUrl")
+                        } else {
+                            Log.e("PerfilScreen", "No se pudo extraer el identificador de la imagen")
+                        }
+                    } else {
+                        Log.e("PerfilScreen", "Foto de perfil no disponible o vacía")
+                    }
                     onResult(usuario)
+
+
                 } else {
                     Log.e("EditarPerfil", "Usuario no encontrado en Firestore. ID: $id")
                     onResult(null)
                 }
             }
-            .addOnFailureListener { exception ->
-                Log.e("EditarPerfil", "Error al obtener usuario: ${exception.message}")
-                onResult(null)
+            .addOnFailureListener { e ->
+                Log.e("EditarPerfil", "Error al obtener el documento: ", e)
             }
     }
 

@@ -52,6 +52,7 @@ fun EditarPerfilScreen(navController: NavController, id_usuario: String, viewMod
     var imagenPerfil by remember { mutableStateOf<String?>(null) }
     var colorPortada by remember { mutableStateOf(Color.LightGray) }
     val context = LocalContext.current
+    val imageUrl = viewModel.imageUrl
     Log.d("EditarPerfil", "usuario para editar ${usuario}")
 
 
@@ -110,7 +111,7 @@ fun EditarPerfilScreen(navController: NavController, id_usuario: String, viewMod
                 ) {
                     if (imagenPerfil != null) {
                         AsyncImage(
-                            model = imagenPerfil,
+                            model = imageUrl,
                             contentDescription = "Foto de perfil",
                             modifier = Modifier.fillMaxSize()
                         )

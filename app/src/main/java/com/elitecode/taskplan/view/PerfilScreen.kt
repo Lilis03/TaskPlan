@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,6 +62,8 @@ import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoField
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.IconButton
+import androidx.compose.ui.layout.ContentScale
+import coil3.compose.AsyncImage
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.auto
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLineComponent
@@ -83,10 +86,10 @@ import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PerfilScreen(navController: NavHostController, viewModel: LoginViewModel){
+fun PerfilScreen(navController: NavHostController, viewModel: LoginViewModel) {
     val context = LocalContext.current
-
     val usuario = viewModel.usuario
+    val imageUrl = viewModel.imageUrl
 
     LaunchedEffect(Unit) {
         try {
@@ -95,72 +98,91 @@ fun PerfilScreen(navController: NavHostController, viewModel: LoginViewModel){
         } catch (e: Exception) {
             Log.e("PerfilScreen", "Error cargando datos: ${e.message}")
         }
-
     }
 
     MenuLateral(navController) { paddingValues ->
+        Column(
+            modifier = Modifier.fillMaxSize().background(Color.White).padding(paddingValues)
+        ) {
+            if (usuario == null) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                return@Column
+            }
 
-        Column( modifier = Modifier.fillMaxSize().background(Color.White).padding(paddingValues)) {
+            val colorPortada = try {
+                Color(android.graphics.Color.parseColor(usuario.color_portada))
+            } catch (e: Exception) {
+                Color.LightGray // En caso de error, usa un color por defecto
+            }
 
-            // Imagen de portada
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(250.dp) // Asegura espacio suficiente para la superposición
+                    .height(250.dp)
             ) {
-                // Color de portada (Cover Photo)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
-                        .background(Color.LightGray),
+                        .background(colorPortada),
                 )
 
-                // Imagen de perfil superpuesta
-                Image(
-                    painter = painterResource(id = R.drawable.usuario), // Reemplaza con tu recurso
-                    contentDescription = "Profile Photo",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
-                        .align(Alignment.BottomCenter) // La coloca en la parte inferior del Box
-                        .offset(y = 8.dp) // Ajusta la superposición, prueba con otros valores si es necesario
+                if (!usuario.foto_perfil.isNullOrEmpty()) {
+                    Log.d("PerfilScreen", "Foto ${usuario.foto_perfil}")
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .size(110.dp)
+                            .offset(y = 8.dp)
+                    ) {
+                        AsyncImage(
+                            model = imageUrl,
+                            contentDescription = "Foto de perfil",
+                            contentScale = ContentScale.Crop, //  Para que la imagen se ajuste bien
+                            modifier = Modifier
+                                .size(100.dp) // Tamaño de la imagen
+                                .clip(CircleShape) // Recorte en forma de círculo
+                        )
+                    }
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.usuario),
+                        contentDescription = "Imagen de perfil predeterminada",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .align(Alignment.BottomCenter)
+                            .offset(y = 8.dp)
+                    )
+                }
 
-                )
             }
 
-            // Contenido del perfil
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                // Nombre y nombre de usuario
-                if (usuario != null) {
-                    Text(
-                        text = usuario.nombre,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Se unió en ${formatearFecha(usuario.fecha_registro)}",
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                } else {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                }
-
+                Text(
+                    text = usuario.nombre,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Se unió en ${formatearFecha(usuario.fecha_registro)}",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
 
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
-                        usuario?.user_id?.let { id ->
-                            Log.d("PerfilEdit", "Navegando a editarPerfil con ID: $id") // Depuración
+                        usuario.user_id?.let { id ->
+                            Log.d("PerfilEdit", "Navegando a editarPerfil con ID: $id")
                             navController.navigate("editarPerfil/$id")
                         } ?: Log.e("PerfilEdit", "El usuario o su ID es nulo")
                     },
@@ -169,10 +191,8 @@ fun PerfilScreen(navController: NavHostController, viewModel: LoginViewModel){
                     Text("Editar perfil")
                 }
 
-
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Sección "Resumen"
                 Text(
                     text = "Resumen",
                     fontSize = 18.sp,
@@ -182,15 +202,10 @@ fun PerfilScreen(navController: NavHostController, viewModel: LoginViewModel){
 
                 Spacer(modifier = Modifier.height(8.dp))
                 CarouselTablets(viewModel)
-
             }
         }
     }
-
-
-
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
