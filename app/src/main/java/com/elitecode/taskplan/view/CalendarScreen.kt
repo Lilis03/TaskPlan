@@ -43,6 +43,7 @@
     import androidx.navigation.NavHostController
     import com.elitecode.taskplan.components.MenuLateral
     import com.elitecode.taskplan.model.Tarea
+    import com.elitecode.taskplan.viewmodel.LoginViewModel
     import com.elitecode.taskplan.viewmodel.TareaViewModel
     import com.google.firebase.auth.FirebaseAuth
     import java.time.LocalDate
@@ -65,7 +66,7 @@
             }
         }
 
-        MenuLateral(navController) { paddingValues ->
+        MenuLateral(navController,  LoginViewModel()) { paddingValues ->
             val context = LocalContext.current
             var selectedDate by remember { mutableStateOf(LocalDate.now()) }
             var currentMonth by remember { mutableStateOf(YearMonth.now()) }

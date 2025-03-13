@@ -100,7 +100,7 @@ fun PerfilScreen(navController: NavHostController, viewModel: LoginViewModel) {
         }
     }
 
-    MenuLateral(navController) { paddingValues ->
+    MenuLateral(navController, viewModel) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize().background(Color.White).padding(paddingValues)
         ) {

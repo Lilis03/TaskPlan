@@ -85,6 +85,7 @@ fun NavigationApp() {
                 Log.e("PerfilEdit", "El id es inválido")
             }
         }
+
         /*composable("editar_tarea/{id_tarea}"){ task->
             val tareae: TareaViewModel = viewModel()
             val tareaId = task.arguments?.getString("id_tarea")

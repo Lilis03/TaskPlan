@@ -91,6 +91,7 @@ import com.elitecode.taskplan.components.CamposVaciosT
 import com.elitecode.taskplan.components.CredencialesIncorrectas
 import com.elitecode.taskplan.components.MenuLateral
 import com.elitecode.taskplan.components.nuevaTarea
+import com.elitecode.taskplan.viewmodel.LoginViewModel
 import com.elitecode.taskplan.viewmodel.TareaViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalTime
@@ -109,7 +110,7 @@ fun NuevaTareaScreen(navController: NavHostController, viewModel: TareaViewModel
     var showCamposVacios by rememberSaveable { mutableStateOf(false) }
     var showFechaHoraDialog by remember { mutableStateOf(false) }
 
-    MenuLateral(navController) { paddingValues ->
+    MenuLateral(navController,  LoginViewModel()) { paddingValues ->
         Column( modifier = Modifier.padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

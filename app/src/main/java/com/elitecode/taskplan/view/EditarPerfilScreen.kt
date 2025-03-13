@@ -83,7 +83,7 @@ fun EditarPerfilScreen(navController: NavController, id_usuario: String, viewMod
         }
     }
 
-    MenuLateral(navController) { paddingValues ->
+    MenuLateral(navController, viewModel) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize().background(Color.White).padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally

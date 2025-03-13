@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
@@ -50,17 +51,20 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.elitecode.taskplan.viewmodel.LoginViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun MenuLateral( navController: NavController,content: @Composable (PaddingValues) -> Unit) {
+fun MenuLateral(navController: NavController, viewModel: LoginViewModel, content: @Composable (PaddingValues) -> Unit) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -116,6 +120,17 @@ fun MenuLateral( navController: NavController,content: @Composable (PaddingValue
                         selected = false,
                         icon = { Icon(Icons.Outlined.DateRange, contentDescription = null) },
                         onClick ={ navController.navigate("calendar")}
+                    )
+                    NavigationDrawerItem(
+                        label = { Text("Cerrar sesión", color = Color.Red) }, // 🔹 Texto en rojo para destacar
+                        selected = false,
+                        icon = { Icon(Icons.Outlined.ExitToApp, contentDescription = "Cerrar sesión", tint = Color.Red) }, // 🔹 Ícono de salida
+                        onClick = {
+                            viewModel.signOut(
+                                navigateHome = { navController.navigate("login") },
+                                context
+                            )
+                        }
                     )
 
                     Spacer(Modifier.height(12.dp))

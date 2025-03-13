@@ -60,6 +60,7 @@ import com.elitecode.taskplan.R
 import com.elitecode.taskplan.components.MenuLateral
 import com.elitecode.taskplan.components.eliminarTarea
 import com.elitecode.taskplan.model.Tarea
+import com.elitecode.taskplan.viewmodel.LoginViewModel
 import com.elitecode.taskplan.viewmodel.TareaViewModel
 
 @Composable
@@ -70,7 +71,7 @@ fun ListaTareasScreen(navController: NavController, viewModel: TareaViewModel){
     val listaTareas by viewModel.listaTareas.collectAsState()
 
 
-    MenuLateral(navController) { paddingValues ->
+    MenuLateral(navController,  LoginViewModel()) { paddingValues ->
         Column( modifier = Modifier.padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

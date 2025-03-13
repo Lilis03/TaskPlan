@@ -92,6 +92,7 @@ import com.elitecode.taskplan.components.MenuLateral
 import com.elitecode.taskplan.components.editarTarea
 import com.elitecode.taskplan.components.nuevaTarea
 import com.elitecode.taskplan.model.Tarea
+import com.elitecode.taskplan.viewmodel.LoginViewModel
 import com.elitecode.taskplan.viewmodel.TareaViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalTime
@@ -121,7 +122,7 @@ fun EditarTareaScreen(navController: NavController, id_tarea: String, viewModel:
    // var titulo by remember { mutableStateOf(tarea?.titulo ?: "") }
 
 
-    MenuLateral(navController) { paddingValues ->
+    MenuLateral(navController, LoginViewModel()) { paddingValues ->
         Column( modifier = Modifier.padding(paddingValues).fillMaxSize()
             .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
