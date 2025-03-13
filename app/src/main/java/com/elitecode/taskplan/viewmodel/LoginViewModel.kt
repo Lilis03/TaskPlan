@@ -176,7 +176,10 @@ class LoginViewModel: ViewModel() {
                         val user = User(
                             user_id = userId.toString(),
                             nombre = nombre.toString(),
-                            fecha_registro =  LocalDate.now().toString()
+                            email = email,
+                            fecha_registro = LocalDate.now().toString(),
+                            foto_perfil = "https://res.cloudinary.com/dgrvrwdk9/image/upload/v1741750072/usuario_igam2y.png", // 🔹 URL de imagen por defecto
+                            color_portada = "#808080" //
                         ).toMap()
 
                         FirebaseFirestore.getInstance().collection("users")

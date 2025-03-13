@@ -1,5 +1,7 @@
 package com.elitecode.taskplan.view
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -53,6 +55,7 @@ import com.elitecode.taskplan.components.UsuarioCreado
 import com.elitecode.taskplan.navigation.Screens
 import com.elitecode.taskplan.viewmodel.LoginViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroScreen(navController: NavHostController, viewModel: LoginViewModel) {
