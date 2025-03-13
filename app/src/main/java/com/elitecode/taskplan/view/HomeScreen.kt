@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -150,10 +151,22 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
         }
         Spacer(modifier = Modifier.height(15.dp))
         Row(){
-            Text(text = "¿No tienes una cuenta?", fontSize = 20.sp, color = Color.Gray)
-            Text(text = " Crear cuenta", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray,  modifier = Modifier.clickable {
-                navController.navigate("registro_screen")
-            } )
+            Text(
+                text = "¿No tienes una cuenta?",
+                fontSize = 20.sp,
+                color = Color.Gray
+            )
+            Text(
+                text = " Crear cuenta",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.DarkGray,
+                modifier = Modifier
+                    .clickable {
+                        navController.navigate("registro_screen")
+                    }
+                    .testTag("crearCuenta")
+            )
         }
         Spacer(modifier = Modifier.weight(1f))
     }

@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -129,6 +130,7 @@ fun RegistroScreen(navController: NavHostController, viewModel: LoginViewModel) 
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.Transparent, RoundedCornerShape(50.dp))
+                        .testTag("Nombre")
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
@@ -153,6 +155,7 @@ fun RegistroScreen(navController: NavHostController, viewModel: LoginViewModel) 
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.Transparent, RoundedCornerShape(50.dp))
+                        .testTag("Correo")
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
@@ -182,10 +185,13 @@ fun RegistroScreen(navController: NavHostController, viewModel: LoginViewModel) 
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.Transparent, RoundedCornerShape(50.dp))
+                        .testTag("Password")
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
                     Button(
+                        modifier = Modifier.size(width = 250.dp, height = 50.dp)
+                            .testTag("Crearcuenta"),
                         onClick = {
                             viewModel.createUser(nombre, email, password){ success ->
                                 if (success){
@@ -193,7 +199,6 @@ fun RegistroScreen(navController: NavHostController, viewModel: LoginViewModel) 
                                 }
                             }
                         },
-                        modifier = Modifier.size(width = 250.dp, height = 50.dp),
                         colors = ButtonDefaults.buttonColors(
                             Color(0xFF769AC4), Color.White
                         ),

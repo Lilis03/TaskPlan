@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
@@ -26,6 +27,7 @@ fun UsuarioCreado(onDismiss: () -> Unit, navController: NavController) {
     val openAlert = remember { mutableStateOf(true) }
 
     AlertDialog(
+        modifier = Modifier.testTag("alert_usuario_creado"),
         onDismissRequest = {
             openAlert.value = false
             onDismiss()

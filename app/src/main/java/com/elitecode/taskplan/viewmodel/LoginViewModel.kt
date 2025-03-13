@@ -166,6 +166,7 @@ class LoginViewModel: ViewModel() {
         }
     }
 
+   // open fun createUser(nombre: String, email: String, password: String, onResult: (Boolean) -> Unit){
     @RequiresApi(Build.VERSION_CODES.O)
     fun createUser(nombre: String, email: String, password: String, onResult: (Boolean) -> Unit){
         auth.createUserWithEmailAndPassword(email, password)
