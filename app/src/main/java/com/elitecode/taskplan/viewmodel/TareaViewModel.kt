@@ -35,11 +35,15 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import android.Manifest
+import com.elitecode.taskplan.model.User
 
 class TareaViewModel : ViewModel(){
     private val db = Firebase.firestore
+
     private val _tarea = mutableStateOf(Tarea())
     var tarea: State<Tarea> = _tarea
+
+
 
     private val _showTareaCreada = mutableStateOf(false)
     val showTareaCreada: State<Boolean> get() = _showTareaCreada
@@ -66,6 +70,7 @@ class TareaViewModel : ViewModel(){
     init {
         //obtenerTareas()
     }
+
     fun obtenerTareas(context: Context){
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
@@ -179,6 +184,7 @@ class TareaViewModel : ViewModel(){
                     _tarea.value = tarea
                     onTareaObtenida(tarea)
                 }
+                Log.d("Firestore", "Tarea: ${ _tarea.value }")
             }
             .addOnFailureListener { exception ->
                 Log.e("Firestore", "Error al obtener tarea ${exception.message}")
@@ -205,7 +211,8 @@ class TareaViewModel : ViewModel(){
                         "categoria" to tareaFinal.categoria,
                         "prioridad" to tareaFinal.prioridad,
                         "recordatorio" to tareaFinal.recordatorio,
-                        "color" to tareaFinal.color
+                        "color" to tareaFinal.color,
+                        "completada" to tareaFinal.completada
                     )
                 )
                     .addOnCompleteListener { task ->
@@ -357,6 +364,7 @@ class TareaViewModel : ViewModel(){
                 }
 
                 _tasks.value = tareasList
+
                 isLoading = false
                 Log.d("CalendarTask", "${_tasks.value}")
             } catch (e: Exception) {
@@ -365,24 +373,7 @@ class TareaViewModel : ViewModel(){
             }
         }
     }
-    fun observeTasks(userId: String) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        isLoading = true
-
-        db.collection("tareas")
-            .whereEqualTo("user_id", userId)
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    Log.e("Firebase", "Error en listener: ", error)
-                    return@addSnapshotListener
-                }
-
-                if (snapshot != null) {
-                    val tareasList = snapshot.documents.mapNotNull { doc ->
-                        doc.toObject(Tarea::class.java)
-                    }
-                    _tasks.value = tareasList
-                }
-            }
+    fun onCompletadaChange(nuevoEstado: Boolean) {
+        _tarea.value = _tarea.value?.copy(completada = nuevoEstado)!!
     }
 }

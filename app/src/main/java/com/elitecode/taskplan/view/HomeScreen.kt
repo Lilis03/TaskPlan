@@ -1,8 +1,10 @@
 package com.elitecode.taskplan.view
 
+import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -26,8 +28,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -43,8 +47,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
+    val maxFontSize = 6f // Tamaño máximo de la fuente en píxeles
+    val minFontSize = 5f // Tamaño mínimo de la fuente en píxeles
+
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val density = LocalDensity.current.density
+    val scaledFontSize = (screenWidth.value / 12) // Valor numérico sin convertir a sp aún
+    val fontSize = (scaledFontSize.coerceIn(minFontSize, maxFontSize)) * density
 
     val token = "936938268954-c3tm4b73epmvpbm9otergnff1o0om72k.apps.googleusercontent.com"
     val context = LocalContext.current
@@ -98,7 +110,10 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Continuar con Correo", fontSize = 24.sp)
+                Text(
+                    text = "Continuar con Correo",
+                    fontSize = fontSize.sp
+                )
             }
         }
         Spacer(modifier = Modifier.height(15.dp))
@@ -130,7 +145,8 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Continuar con Google", fontSize = 24.sp)
+                Text(text = "Continuar con Google",
+                    fontSize = fontSize.sp)
             }
         }
         Spacer(modifier = Modifier.height(15.dp))

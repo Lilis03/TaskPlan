@@ -66,6 +66,14 @@ dependencies {
     //Google services
     implementation("com.google.android.gms:play-services-auth:21.3.0")
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m2)
+    implementation(libs.vico.compose.m3)
+    implementation(libs.vico.views)
+
+    implementation(libs.cloudinary)
+    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
 
     //Testing
     //JUnit para pruebas unitarias

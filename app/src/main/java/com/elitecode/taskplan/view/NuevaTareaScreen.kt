@@ -148,10 +148,12 @@ fun NuevaTareaScreen(navController: NavHostController, viewModel: TareaViewModel
                                     colorFilter = ColorFilter.tint(Color(0xFF769AC4))
                                 )
                             },
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                unfocusedBorderColor = Color(0xFF769AC4),
-                                focusedBorderColor = Color(0xFF769AC4),
-                                cursorColor = Color(0xFF769AC4)
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = Color(0xFF769AC4),
+                                unfocusedIndicatorColor = Color(0xFF769AC4),
+                                cursorColor = Color(0xFF769AC4),
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent
                             ),
                             textStyle = LocalTextStyle.current.copy(
                                 fontSize = 22.sp
@@ -173,10 +175,12 @@ fun NuevaTareaScreen(navController: NavHostController, viewModel: TareaViewModel
                                     colorFilter = ColorFilter.tint(Color(0xFF769AC4))
                                 )
                             },
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                unfocusedBorderColor = Color(0xFF769AC4),
-                                focusedBorderColor = Color(0xFF769AC4),
-                                cursorColor = Color(0xFF769AC4)
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = Color(0xFF769AC4),
+                                unfocusedIndicatorColor = Color(0xFF769AC4),
+                                cursorColor = Color(0xFF769AC4),
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent
                             ),
                             textStyle = LocalTextStyle.current.copy(
                                 fontSize = 17.sp
@@ -294,10 +298,12 @@ fun CategoriasOpciones(onCategoriaSelecionada: (String) -> Unit ){
                    tint = Color(0xFF769AC4)
                 )
             },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                unfocusedBorderColor = Color(0xFF769AC4),
-                focusedBorderColor = Color(0xFF769AC4),
-                cursorColor = Color(0xFF769AC4)
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color(0xFF769AC4),
+                unfocusedIndicatorColor = Color(0xFF769AC4),
+                cursorColor = Color(0xFF769AC4),
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
             ),
             shape = RoundedCornerShape(50.dp),
             modifier = Modifier
@@ -351,10 +357,12 @@ fun PrioridadOpciones(onPrioridadSelecionada: (String) -> Unit){
                     colorFilter = ColorFilter.tint(Color(0xFF769AC4))
                 )
             },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                unfocusedBorderColor = Color(0xFF769AC4),
-                focusedBorderColor = Color(0xFF769AC4),
-                cursorColor = Color(0xFF769AC4)
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color(0xFF769AC4),
+                unfocusedIndicatorColor = Color(0xFF769AC4),
+                cursorColor = Color(0xFF769AC4),
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
             ),
             shape = RoundedCornerShape(50.dp),
             modifier = Modifier
@@ -503,10 +511,12 @@ fun DatePickerFieldToModal(
                 contentDescription = "Select date",
                 tint = Color(0xFF769AC4))
         },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            unfocusedBorderColor = Color(0xFF769AC4),
-            focusedBorderColor = Color(0xFF769AC4),
-            cursorColor = Color(0xFF769AC4)
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color(0xFF769AC4),
+            unfocusedIndicatorColor = Color(0xFF769AC4),
+            cursorColor = Color(0xFF769AC4),
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent
         ),
         shape = RoundedCornerShape(50.dp),
         modifier = modifier

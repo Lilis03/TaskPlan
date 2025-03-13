@@ -117,13 +117,6 @@ fun MenuLateral( navController: NavController,content: @Composable (PaddingValue
                         icon = { Icon(Icons.Outlined.DateRange, contentDescription = null) },
                         onClick ={ navController.navigate("calendar")}
                     )
-                    NavigationDrawerItem(
-                        label = { Text("Recordatorios") },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.Notifications, contentDescription = null) },
-                        badge = { Text("20") },
-                        onClick = { /* Handle click */ },
-                    )
 
                     Spacer(Modifier.height(12.dp))
                 }

@@ -10,4 +10,5 @@ sealed class Screens(val route: String) {
     object PerfilScreen : Screens("perfil")
     object ListaTareasScreen : Screens("listado_tareas")
     object EditarTareaScreen : Screens("editar_tarea")
+    object EditarPerfilScreen : Screens("editarPerfil")
 }
