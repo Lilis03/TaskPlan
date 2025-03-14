@@ -170,7 +170,8 @@ fun EditarPerfilScreen(navController: NavController, id_usuario: String, viewMod
                             Button(onClick = {
                                 colorPortada = colorPersonalizado //  Guarda el color personalizado
                                 showColorPicker = false
-                            }) {
+                            },colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF769AC4))
+                            ) {
                                 Text("Seleccionar")
                             }
                         }
@@ -255,46 +256,6 @@ fun EditarPerfilScreen(navController: NavController, id_usuario: String, viewMod
 }
 
 @Composable
-fun mostrarSelectorColor(onColorSelected: (Color) -> Unit) {
-    val showDialog = remember { mutableStateOf(false) }
-    val selectedColor = remember { mutableStateOf(Color.Gray) }
-
-    if (showDialog.value) {
-        AlertDialog(
-            onDismissRequest = { showDialog.value = false },
-            title = { Text("Selecciona un color de portada") },
-            text = {
-                Column {
-                    listOf(Color.Red, Color.Blue, Color.Green, Color.Gray, Color.Yellow).forEach { color ->
-                        Box(
-                            modifier = Modifier
-                                .size(50.dp)
-                                .background(color)
-                                .clickable {
-                                    selectedColor.value = color
-                                    onColorSelected(color)
-                                    showDialog.value = false
-                                }
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                Button(onClick = { showDialog.value = false }) {
-                    Text("Cerrar")
-                }
-            }
-        )
-    }
-
-    Button(
-        onClick = { showDialog.value = true },
-        modifier = Modifier.padding(8.dp)
-    ) {
-        Text("Seleccionar color")
-    }
-}
-@Composable
 fun SliderColorPicker(color: Color, onColorChange: (Color) -> Unit) {
     var red by remember { mutableStateOf(color.red) }
     var green by remember { mutableStateOf(color.green) }
@@ -306,7 +267,7 @@ fun SliderColorPicker(color: Color, onColorChange: (Color) -> Unit) {
             value = red,
             onValueChange = { red = it; onColorChange(Color(red, green, blue, 1f)) },
             valueRange = 0f..1f,
-            colors = SliderDefaults.colors(thumbColor = Color.Red)
+            colors = SliderDefaults.colors(thumbColor = Color.Red , activeTrackColor = Color.Red, inactiveTrackColor = Color.LightGray)
         )
 
         Text("Verde: ${green * 255}", fontSize = 12.sp)
@@ -314,7 +275,7 @@ fun SliderColorPicker(color: Color, onColorChange: (Color) -> Unit) {
             value = green,
             onValueChange = { green = it; onColorChange(Color(red, green, blue, 1f)) },
             valueRange = 0f..1f,
-            colors = SliderDefaults.colors(thumbColor = Color.Green)
+            colors = SliderDefaults.colors(thumbColor = Color.Green, activeTrackColor = Color.Green, inactiveTrackColor = Color.LightGray)
         )
 
         Text("Azul: ${blue * 255}", fontSize = 12.sp)
@@ -322,7 +283,7 @@ fun SliderColorPicker(color: Color, onColorChange: (Color) -> Unit) {
             value = blue,
             onValueChange = { blue = it; onColorChange(Color(red, green, blue, 1f)) },
             valueRange = 0f..1f,
-            colors = SliderDefaults.colors(thumbColor = Color.Blue)
+            colors = SliderDefaults.colors(thumbColor = Color.Blue, activeTrackColor = Color.Blue, inactiveTrackColor = Color.LightGray)
         )
 
         //  Muestra el color seleccionado
