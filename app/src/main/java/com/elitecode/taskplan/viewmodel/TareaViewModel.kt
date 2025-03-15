@@ -35,7 +35,10 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import android.Manifest
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.elitecode.taskplan.model.User
+import java.time.LocalDate
 
 class TareaViewModel : ViewModel(){
     private val db = Firebase.firestore
@@ -66,10 +69,11 @@ class TareaViewModel : ViewModel(){
 
     private val _listaTareas = MutableStateFlow<List<Tarea>>(emptyList())
     val listaTareas = _listaTareas.asStateFlow()
+    private val _tareasFiltradas = MutableStateFlow<List<Tarea>>(emptyList())
+    val tareasFiltradas = _tareasFiltradas.asStateFlow()
 
-    init {
-        //obtenerTareas()
-    }
+    private var categoriaSeleccionada: String? = null
+    private var prioridadSeleccionada: String? = null
 
     fun obtenerTareas(context: Context){
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -87,6 +91,8 @@ class TareaViewModel : ViewModel(){
 
                 withContext(Dispatchers.Main){
                     _listaTareas.value = tareas
+                   aplicarFiltros()
+
                 }
 
                 tareas.forEach{ tarea ->
@@ -97,6 +103,18 @@ class TareaViewModel : ViewModel(){
             }catch (e: Exception){
                 Log.d("FirestoreError", "Error obteniendo las tareas")
             }
+        }
+    }
+
+    fun filtrarTareas(categoria: String?, prioridad: String?){
+        categoriaSeleccionada = categoria
+        prioridadSeleccionada = prioridad
+        aplicarFiltros()
+    }
+
+    private fun aplicarFiltros(){
+        _tareasFiltradas.value = _listaTareas.value.filter { tarea ->
+            (categoriaSeleccionada == null || tarea.categoria == categoriaSeleccionada) && (prioridadSeleccionada == null || tarea.prioridad == prioridadSeleccionada)
         }
     }
 
@@ -159,9 +177,6 @@ class TareaViewModel : ViewModel(){
             null
         }
     }
-
-
-
 
     fun eliminarTarea(id_tarea: String) {
         viewModelScope.launch(Dispatchers.IO) {

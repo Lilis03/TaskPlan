@@ -93,7 +93,7 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
         Spacer(Modifier.height(14.dp))
         Button(onClick = { navController.navigate("login") },
             modifier = Modifier
-                .size(width = 280.dp, height = 50.dp),
+                .size(width = 250.dp, height = 50.dp),
             colors = ButtonDefaults.buttonColors(
                 Color(0xFF769AC4), Color.White
             )
@@ -111,7 +111,7 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Continuar con Correo",
-                    fontSize = fontSize.sp
+                    fontSize = 20.sp
                 )
             }
         }
@@ -127,7 +127,8 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
             launcher.launch(googleSingInCliente.signInIntent)
         },
             modifier = Modifier
-                .size(width = 280.dp, height = 50.dp),
+                   .size(width = 250.dp, height = 50.dp),
+               // .size(width = 280.dp, height = 50.dp),
             colors = ButtonDefaults.buttonColors(
                 Color.Transparent, Color(0xFF769AC4),
                 //Color(0xFF769AC4), Color.White
@@ -146,7 +147,7 @@ fun HomeScreen(navController: NavHostController, viewModel: LoginViewModel){
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = "Continuar con Google",
-                    fontSize = fontSize.sp)
+                    fontSize = 20.sp)
             }
         }
         Spacer(modifier = Modifier.height(15.dp))

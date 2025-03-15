@@ -322,6 +322,7 @@ fun CategoriasOpciones(onCategoriaSelecionada: (String) -> Unit ){
         ExposedDropdownMenu(
             expanded = expanden,
             onDismissRequest = {expanden = false},
+            modifier = Modifier.background(Color.White)
         ) {
             categorias.forEach { categoria ->
                 DropdownMenuItem(
@@ -400,8 +401,8 @@ fun PrioridadOpciones(onPrioridadSelecionada: (String) -> Unit){
 fun ColoresButton(onColorSelecionado: (String) -> Unit){
     val colores = listOf(
         Color(0xfF7C9A78) to "Verde",
-        Color(0xFFFFAA9A) to "Rosita",
-        Color(0xff9E6999) to "Moradito",
+        Color(0xFFE783A1) to "Rosita",
+        Color(0xFFD5ABCF) to "Moradito",
         Color(0xffFFD372) to "Amarillo",
         Color(0xffC08769) to "Café",
         Color(0xffC4661F) to "Naranja",

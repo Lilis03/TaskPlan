@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,6 +51,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -61,7 +63,11 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoField
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
@@ -186,7 +192,10 @@ fun PerfilScreen(navController: NavHostController, viewModel: LoginViewModel) {
                             navController.navigate("editarPerfil/$id")
                         } ?: Log.e("PerfilEdit", "El usuario o su ID es nulo")
                     },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    colors = ButtonDefaults.buttonColors(
+                        Color(0xFF769AC4), Color.White
+                    )
                 ) {
                     Text("Editar perfil")
                 }
@@ -294,25 +303,50 @@ fun SelectorRango(onRangoSeleccionado: (String) -> Unit) {
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
-        TextField(
+        OutlinedTextField(
+            value = selectedRango,
+            onValueChange = {},
+            placeholder = { Text("Seleccionar rango") },
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color(0xFF769AC4),
+                unfocusedIndicatorColor = Color(0xFF769AC4),
+                cursorColor = Color(0xFF769AC4),
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
+            ),
+            shape =  RoundedCornerShape(50.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor()
+                .clickable { expanded = !expanded },
+            readOnly = true,
+            textStyle = LocalTextStyle.current.copy(fontSize = 17.sp),
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+            }
+        )
+        /*TextField(
             value = selectedRango,
             onValueChange = { }, // No se permite edición manual
             label = { Text("Seleccionar rango") },
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "Expandir menú"
+                    contentDescription = "Expandir menú",
+                    tint = Color.Blue
                 )
             },
             readOnly = true,
+            colors = TextFieldDefaults.colors(Color.Blue, Color.Cyan, Color.Green),
             modifier = Modifier
                 .fillMaxWidth()
                 .menuAnchor()
-        )
+        )*/
 
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(Color(0x40C3D8F6))
         ) {
             listOf("Hoy", "Semana", "Mes").forEach { rango ->
                 DropdownMenuItem(
@@ -409,36 +443,45 @@ fun TarjetaResumen(tareas: List<Tarea>, rango: String) {
 
     // Mostrar la tarjeta con el contador y la barra de progreso
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        //colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         modifier = Modifier
             .width(315.dp)
             .height(250.dp)
             .padding(8.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF33A8DE).copy(alpha = 0.1f))
+            //0xFFACE4FF, 0xFF33A8DE
         ) {
-            Text("Tareas $rango", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                Text("Tareas $rango", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(8.dp))
 
-            // Mostrar las tareas pendientes
-            Text("Tareas pendientes: $tareasPendientes de ${tareasFiltradas.size}", fontSize = 14.sp)
-            Spacer(modifier = Modifier.height(8.dp))
+                // Mostrar las tareas pendientes
+                Text(
+                    "Tareas pendientes: $tareasPendientes de ${tareasFiltradas.size}",
+                    fontSize = 14.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
 
-            // Barra de progreso
-            LinearProgressIndicator(
-                progress = progreso.coerceIn(0f, 1f),
-                modifier = Modifier.fillMaxWidth(),
-                color = Color(0xFF769AC4), // Color de la barra de progreso
-                trackColor = Color.White // Color de fondo de la barra
-            )
+                // Barra de progreso
+                LinearProgressIndicator(
+                    progress = progreso.coerceIn(0f, 1f),
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color(0xFF769AC4), // Color de la barra de progreso
+                    trackColor = Color.White // Color de fondo de la barra
+                )
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            // Tareas completadas
-            Text("Tareas completadas: $tareasCompletadas", fontSize = 14.sp)
+                // Tareas completadas
+                Text("Tareas completadas: $tareasCompletadas", fontSize = 14.sp)
+            }
         }
     }
 }
@@ -449,12 +492,17 @@ fun TarjetaGrafica(viewModel: LoginViewModel, rango: String) {
     val tareas = viewModel.tareas
     Log.d("PerfilScreen", "Se recargan las tareas ${tareas}")
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        //colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         modifier = Modifier
             .width(315.dp)
             .height(250.dp)
             .padding(8.dp)
     ) {
+        Box(modifier = Modifier
+            .background(Color(0xFF33A8DE).copy(alpha = 0.1f))
+            .fillMaxSize()
+            //0xffA8D1E7
+        ) {
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Text(
                 text = "Tareas por $rango",
@@ -481,7 +529,7 @@ fun TarjetaGrafica(viewModel: LoginViewModel, rango: String) {
                     )
                 }
             }
-
+}
         }
     }
 }
@@ -568,48 +616,54 @@ fun GraficaTareasPorSemana(
 
     // Mostrar la gráfica
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+       // colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         modifier = Modifier
             .width(310.dp)
             .height(250.dp)
             .padding(8.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(modifier = Modifier
+            .background(Color(0xFF33A8DE).copy(alpha = 0.1f))
+            .fillMaxSize()
+            //0xffA8D1E7
         ) {
-            if (cantidadTareasPorDia.all { it == 0 }) {
-                // Mostrar un icono y mensaje cuando no haya tareas
-                Icon(
-                    painter = painterResource(id = R.drawable.agregar_tarea),
-                    contentDescription = "Sin tareas",
-                    modifier = Modifier.size(80.dp),
-                    tint = Color.Gray
-                )
-                Text(
-                    text = "No hay tareas para $rango",
-                    color = Color.Gray,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            } else {
-                // Si hay datos, mostrar la gráfica
-                LaunchedEffect(cantidadTareasPorDia) {
-                    modelProducer.runTransaction {
-                        columnSeries { series(cantidadTareasPorDia.map { it.toFloat() }) }
+            Column(
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (cantidadTareasPorDia.all { it == 0 }) {
+                    // Mostrar un icono y mensaje cuando no haya tareas
+                    Icon(
+                        painter = painterResource(id = R.drawable.agregar_tarea),
+                        contentDescription = "Sin tareas",
+                        modifier = Modifier.size(80.dp),
+                        tint = Color.Gray
+                    )
+                    Text(
+                        text = "No hay tareas para $rango",
+                        color = Color.Gray,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                } else {
+                    // Si hay datos, mostrar la gráfica
+                    LaunchedEffect(cantidadTareasPorDia) {
+                        modelProducer.runTransaction {
+                            columnSeries { series(cantidadTareasPorDia.map { it.toFloat() }) }
+                        }
                     }
-                }
 
-                CartesianChartHost(
-                    chart = rememberCartesianChart(
-                        rememberColumnCartesianLayer(),
-                        startAxis = startAxis, // Eje Y configurado
-                        bottomAxis = bottomAxis, // Eje X configurado
-                    ),
-                    modelProducer = modelProducer,
-                    modifier = modifier
-                )
+                    CartesianChartHost(
+                        chart = rememberCartesianChart(
+                            rememberColumnCartesianLayer(),
+                            startAxis = startAxis, // Eje Y configurado
+                            bottomAxis = bottomAxis, // Eje X configurado
+                        ),
+                        modelProducer = modelProducer,
+                        modifier = modifier
+                    )
+                }
             }
         }
     }

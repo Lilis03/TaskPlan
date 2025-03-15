@@ -122,9 +122,9 @@ fun MenuLateral(navController: NavController, viewModel: LoginViewModel, content
                         onClick ={ navController.navigate("calendar")}
                     )
                     NavigationDrawerItem(
-                        label = { Text("Cerrar sesión", color = Color.Red) }, // 🔹 Texto en rojo para destacar
+                        label = { Text("Cerrar sesión", color = Color(0xFFD72F2F)) }, // 🔹 Texto en rojo para destacar
                         selected = false,
-                        icon = { Icon(Icons.Outlined.ExitToApp, contentDescription = "Cerrar sesión", tint = Color.Red) }, // 🔹 Ícono de salida
+                        icon = { Icon(Icons.Outlined.ExitToApp, contentDescription = "Cerrar sesión", tint = Color(0xFFD72F2F)) }, // 🔹 Ícono de salida
                         onClick = {
                             viewModel.signOut(
                                 navigateHome = { navController.navigate("login") },
