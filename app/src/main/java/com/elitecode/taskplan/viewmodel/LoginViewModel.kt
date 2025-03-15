@@ -4,9 +4,15 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
@@ -295,11 +301,5 @@ class LoginViewModel: ViewModel() {
             }
     }
 
-    // Mostrar selector de color (Opcional, para futuro)
-    fun mostrarSelectorColor(onColorSelected: (Color) -> Unit) {
-        // Aquí podrías implementar un diálogo para seleccionar colores
-        val colores = listOf(Color.Red, Color.Blue, Color.Green, Color.Gray, Color.Yellow)
-        onColorSelected(colores.random()) // Simula selección aleatoria (Solo para ejemplo)
-    }
 
 }
