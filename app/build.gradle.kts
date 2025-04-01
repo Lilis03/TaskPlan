@@ -28,6 +28,11 @@ android {
             )
         }
     }
+
+    buildFeatures{
+        viewBinding = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -41,7 +46,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -61,6 +65,38 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.3.0")
     //Google services
     implementation("com.google.android.gms:play-services-auth:21.3.0")
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m2)
+    implementation(libs.vico.compose.m3)
+    implementation(libs.vico.views)
+
+    implementation(libs.cloudinary)
+    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
+
+    //Testing
+    //JUnit para pruebas unitarias
+    testImplementation("junit:junit:4.13.2")
+    //Robolectric para pruebas de integración sin emulador
+    testImplementation("org.robolectric:robolectric:4.10")
+    //Compose UI Testing
+    androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.5.0")
+    androidTestImplementation(project(":app"))
+    debugImplementation ("androidx.compose.ui:ui-test-manifest:1.5.0")
+    // Espresso para UI Testing en Compose
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation ("androidx.test.espresso:espresso-contrib:3.5.0")
+    androidTestImplementation ("androidx.test.espresso:espresso-idling-resource:3.5.0")
+    androidTestImplementation ("org.hamcrest:hamcrest-library:2.2")
+
+
+    // Testing con ViewModel y LiveData
+    testImplementation ("androidx.arch.core:core-testing:2.2.0")
+    testImplementation ("io.mockk:mockk:1.13.5")
+    androidTestImplementation("org.mockito:mockito-core:4.11.0")
+    androidTestImplementation("org.mockito:mockito-android:4.11.0")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

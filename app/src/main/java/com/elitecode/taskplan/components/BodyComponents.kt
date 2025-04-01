@@ -1,6 +1,8 @@
 package com.elitecode.taskplan.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -25,4 +27,15 @@ fun MainTextField(value: String, onvalueChange: (String) -> Unit, placeholder: S
             .fillMaxWidth()
             .background(Color(0xFFF5F5F5), RoundedCornerShape(50.dp))
     )
+}
+
+@Composable
+fun HorizontalDivider() {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text("Escolar")
+        HorizontalDivider()
+        Text("Second item in list")
+    }
 }

@@ -1,6 +1,6 @@
 # TaskPlan
 
-## Requisitos previos
+## Requisitos previos para descargar Android Studio
 
 Antes de comenzar, asegúrate de contar con los siguientes requisitos:
 

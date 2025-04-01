@@ -1,5 +1,7 @@
 package com.elitecode.taskplan.view
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,12 +35,15 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -47,15 +52,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.elitecode.taskplan.components.UsuarioCreado
 import com.elitecode.taskplan.navigation.Screens
+import com.elitecode.taskplan.viewmodel.LoginViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistroScreen(navController: NavHostController) {
+fun RegistroScreen(navController: NavHostController, viewModel: LoginViewModel) {
 
-    val nombre = remember { mutableStateOf("") }
-    val email = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
+    var nombre by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var showUsuarioCreado by remember { mutableStateOf(false) }
+    //var showUsuarioCreado by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -99,8 +109,8 @@ fun RegistroScreen(navController: NavHostController) {
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
-                    value = nombre.value,
-                    onValueChange = { nombre.value = it },
+                    value = nombre,
+                    onValueChange = { nombre = it },
                     placeholder = { Text("Nombre") },
                     leadingIcon = {
                         Icon(
@@ -109,22 +119,23 @@ fun RegistroScreen(navController: NavHostController) {
                             tint = Color(0xFF0769AC4)
                         )
                     },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        unfocusedBorderColor = Color(0xFF769AC4),
-                        focusedBorderColor = Color(0xFF769AC4),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color(0xFF769AC4),
+                        unfocusedIndicatorColor = Color(0xFF769AC4),
                         cursorColor = Color(0xFF769AC4),
-                        //textColor = Color.Black,
-                        //placeholderColor = Color.Gray
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent
                     ),
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.Transparent, RoundedCornerShape(50.dp))
+                        .testTag("Nombre")
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
-                    value = email.value,
-                    onValueChange = { email.value = it },
+                    value = email,
+                    onValueChange = { email = it },
                     placeholder = { Text("Correo") },
                     leadingIcon = {
                         Icon(
@@ -133,22 +144,23 @@ fun RegistroScreen(navController: NavHostController) {
                             tint = Color(0xFF0769AC4)
                         )
                     },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        unfocusedBorderColor = Color(0xFF769AC4),
-                        focusedBorderColor = Color(0xFF769AC4),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color(0xFF769AC4),
+                        unfocusedIndicatorColor = Color(0xFF769AC4),
                         cursorColor = Color(0xFF769AC4),
-                        //textColor = Color.Black,
-                        //placeholderColor = Color.Gray
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent
                     ),
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.Transparent, RoundedCornerShape(50.dp))
+                        .testTag("Correo")
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
-                    value = password.value,
-                    onValueChange = { password.value = it },
+                    value = password,
+                    onValueChange = { password = it },
                     placeholder = { Text("Contraseña") },
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions =  KeyboardOptions(
@@ -162,23 +174,31 @@ fun RegistroScreen(navController: NavHostController) {
                             tint = Color(0xFF0769AC4)
                         )
                     },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        unfocusedBorderColor = Color(0xFF769AC4),
-                        focusedBorderColor = Color(0xFF769AC4),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color(0xFF769AC4),
+                        unfocusedIndicatorColor = Color(0xFF769AC4),
                         cursorColor = Color(0xFF769AC4),
-                        //textColor = Color.Black,
-                        //placeholderColor = Color.Gray
-                        ),
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent
+                    ),
                     shape = RoundedCornerShape(50.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.Transparent, RoundedCornerShape(50.dp))
+                        .testTag("Password")
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
                     Button(
-                        onClick = { },
-                        modifier = Modifier.size(width = 250.dp, height = 50.dp),
+                        modifier = Modifier.size(width = 250.dp, height = 50.dp)
+                            .testTag("Crearcuenta"),
+                        onClick = {
+                            viewModel.createUser(nombre, email, password){ success ->
+                                if (success){
+                                    showUsuarioCreado = true
+                                }
+                            }
+                        },
                         colors = ButtonDefaults.buttonColors(
                             Color(0xFF769AC4), Color.White
                         ),
@@ -186,6 +206,16 @@ fun RegistroScreen(navController: NavHostController) {
                     ) {
                         Text(text = "Crear cuenta", fontSize = 20.sp)
                     }
+                if(showUsuarioCreado){
+
+                    UsuarioCreado( onDismiss = {
+                        nombre= ""
+                        email = ""
+                        password = ""
+                        showUsuarioCreado = false
+                        },
+                        navController = navController)
+                }
             }
         }
     }
